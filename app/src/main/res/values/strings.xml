@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ImageDrive</string>
+    <string name="permission_tip">请前往设置开启权限</string>
+    <string name="copy_right"><![CDATA[Copy©Mi&Jack]]></string>
+</resources>
