@@ -16,15 +16,22 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.MainActivity" />
+        <activity
+            android:name=".ui.MainActivity"
+            android:label="MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.ScrollingActivity"
+            android:label="@string/title_activity_scrolling"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
