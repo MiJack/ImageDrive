@@ -39,4 +39,6 @@ dependencies {
     compile 'com.facebook.stetho:stetho:1.4.2'
     compile 'cat.ereza:customactivityoncrash:1.5.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+
 }
