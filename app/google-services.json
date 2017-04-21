@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "947072050139",
+    "firebase_url": "https://fir-studyjams.firebaseio.com",
+    "project_id": "fir-studyjams",
+    "storage_bucket": "fir-studyjams.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:947072050139:android:988d1bf1fb647999",
+        "android_client_info": {
+          "package_name": "com.mijack.studyjams"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "947072050139-c8ib3itpsg6a3kb7pkc222pmbafi1fd1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_E1uK8uRasrSLg5A11DE9tQNS_jr85pM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

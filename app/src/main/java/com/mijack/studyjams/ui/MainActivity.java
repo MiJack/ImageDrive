@@ -2,6 +2,7 @@ package com.mijack.studyjams.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import com.mijack.studyjams.R;
 import com.mijack.studyjams.adapter.ImageAdapter;
 import com.mijack.studyjams.base.BaseActivity;
+import com.mijack.studyjams.componment.NavigationHeaderView;
 import com.mijack.studyjams.core.MediaManager;
 import com.mijack.studyjams.entity.Image;
 import com.mijack.studyjams.entity.Media;
@@ -24,13 +26,15 @@ import java.util.List;
  * @date 2017/4/16
  */
 public class MainActivity extends BaseActivity {
+    public static final int REQUEST_CODE_LOGIN = 1;
     Toolbar toolbar;
     RecyclerView recyclerView;
     GridLayoutManager gridLayoutManager;
     ImageAdapter imageAdapter;
     DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-
+    NavigationHeaderView headerView;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,7 +42,10 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        drawerLayout= (DrawerLayout) findViewById(R.id.drawerLayout);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        navigationView = (NavigationView) findViewById(R.id.navigationView);
+        headerView = new NavigationHeaderView(this, navigationView);
+        headerView.loadLoginInfo();
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.content_drawer_open, R.string.content_drawer_close);
@@ -70,11 +77,13 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.actionShowFolder:
-                imageAdapter.setShowType(ImageAdapter.SHOW_FOLDER);break;
+                imageAdapter.setShowType(ImageAdapter.SHOW_FOLDER);
+                break;
             case R.id.actionShowImages:
-                imageAdapter.setShowType(ImageAdapter.SHOW_IMAGE_ONLY);break;
+                imageAdapter.setShowType(ImageAdapter.SHOW_IMAGE_ONLY);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
