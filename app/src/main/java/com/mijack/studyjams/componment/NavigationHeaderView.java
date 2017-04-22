@@ -6,9 +6,11 @@ import android.support.design.widget.NavigationView;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.mijack.studyjams.R;
-import com.mijack.studyjams.ui.LoginActivity;
+import com.mijack.studyjams.ui.AccountActivity;
 import com.mijack.studyjams.ui.MainActivity;
+import com.mijack.studyjams.ui.ProfileActivity;
 
 /**
  * @author Mr.Yuan
@@ -17,8 +19,10 @@ import com.mijack.studyjams.ui.MainActivity;
 public class NavigationHeaderView implements View.OnClickListener {
     ImageView profileView;
     Activity activity;
+    FirebaseAuth firebaseAuth;
 
     public NavigationHeaderView(Activity activity, NavigationView navigationView) {
+        firebaseAuth = FirebaseAuth.getInstance();
         this.activity = activity;
         if (navigationView.getHeaderCount() == 0) {
             throw new IllegalArgumentException("NavigationView has headView");
@@ -37,10 +41,11 @@ public class NavigationHeaderView implements View.OnClickListener {
             case R.id.profile_image:
                 //
                 if (!isLogin()) {
-                    Intent intent = new Intent(activity, LoginActivity.class);
+                    Intent intent = new Intent(activity, AccountActivity.class);
                     activity.startActivityForResult(intent, MainActivity.REQUEST_CODE_LOGIN);
                 } else {
-
+                    Intent intent = new Intent(activity, ProfileActivity.class);
+                    activity.startActivityForResult(intent, MainActivity.REQUEST_CODE_LOGIN);
                 }
                 break;
         }
@@ -48,6 +53,6 @@ public class NavigationHeaderView implements View.OnClickListener {
     }
 
     public boolean isLogin() {
-        return false;
+        return firebaseAuth.getCurrentUser() != null;
     }
 }

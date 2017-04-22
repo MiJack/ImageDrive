@@ -13,8 +13,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.mijack.studyjams.R;
+import com.mijack.studyjams.base.BaseActivity;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends BaseActivity {
 
     private static final int CODE_REQUEST_STORAGE_PERMISSION = 1;
 
