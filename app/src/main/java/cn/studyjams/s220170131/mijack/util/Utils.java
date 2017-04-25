@@ -1,4 +1,4 @@
-package com.mijack.studyjams.util;
+package cn.studyjams.s220170131.mijack.util;
 
 import android.database.Cursor;
 

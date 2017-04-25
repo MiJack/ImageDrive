@@ -1,4 +1,4 @@
-package com.mijack.studyjams.ui;
+package cn.studyjams.s220170131.mijack.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -19,10 +19,10 @@ import android.widget.Toast;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.mijack.studyjams.R;
-import com.mijack.studyjams.base.BaseActivity;
-import com.mijack.studyjams.util.TextHelper;
-import com.mijack.studyjams.widget.IMEBlockLayout;
+import cn.studyjams.s220170131.mijack.R;
+import cn.studyjams.s220170131.mijack.base.BaseActivity;
+import cn.studyjams.s220170131.mijack.util.TextHelper;
+import cn.studyjams.s220170131.mijack.widget.IMEBlockLayout;
 
 public class AccountActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "AccountActivity";

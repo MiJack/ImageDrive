@@ -1,4 +1,4 @@
-package com.mijack.studyjams.entity;
+package cn.studyjams.s220170131.mijack.entity;
 
 /**
  * @author Mr.Yuan

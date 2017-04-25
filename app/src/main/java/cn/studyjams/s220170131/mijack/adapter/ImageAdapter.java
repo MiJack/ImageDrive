@@ -1,4 +1,4 @@
-package com.mijack.studyjams.adapter;
+package cn.studyjams.s220170131.mijack.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -11,11 +11,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.MemoryCategory;
 import com.bumptech.glide.RequestManager;
-import com.mijack.studyjams.R;
-import com.mijack.studyjams.entity.Folder;
-import com.mijack.studyjams.entity.Image;
-import com.mijack.studyjams.entity.Media;
-import com.mijack.studyjams.util.Utils;
+import cn.studyjams.s220170131.mijack.R;
+import cn.studyjams.s220170131.mijack.entity.Folder;
+import cn.studyjams.s220170131.mijack.entity.Image;
+import cn.studyjams.s220170131.mijack.entity.Media;
+import cn.studyjams.s220170131.mijack.util.Utils;
 
 import java.io.File;
 import java.util.List;

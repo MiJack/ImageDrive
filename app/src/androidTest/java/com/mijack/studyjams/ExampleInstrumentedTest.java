@@ -1,4 +1,4 @@
-package com.mijack.studyjams;
+package cn.studyjams.s220170131.mijack;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.mijack.studyjams", appContext.getPackageName());
+        assertEquals("cn.studyjams.s220170131.mijack", appContext.getPackageName());
     }
 }

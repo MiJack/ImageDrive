@@ -1,4 +1,4 @@
-package com.mijack.studyjams.ui;
+package cn.studyjams.s220170131.mijack.ui;
 
 import android.Manifest;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mijack.studyjams.R;
-import com.mijack.studyjams.base.BaseActivity;
+import cn.studyjams.s220170131.mijack.R;
+import cn.studyjams.s220170131.mijack.base.BaseActivity;
 
 public class SplashActivity extends BaseActivity {
 

@@ -1,4 +1,4 @@
-package com.mijack.studyjams.widget;
+package cn.studyjams.s220170131.mijack.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;

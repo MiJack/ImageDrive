@@ -1,4 +1,4 @@
-package com.mijack.studyjams.base;
+package cn.studyjams.s220170131.mijack.base;
 
 import android.support.v7.app.AppCompatActivity;
 

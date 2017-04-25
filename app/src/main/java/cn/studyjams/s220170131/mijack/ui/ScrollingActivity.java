@@ -1,4 +1,4 @@
-package com.mijack.studyjams.ui;
+package cn.studyjams.s220170131.mijack.ui;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.mijack.studyjams.R;
+import cn.studyjams.s220170131.mijack.R;
 
 public class ScrollingActivity extends AppCompatActivity {
 

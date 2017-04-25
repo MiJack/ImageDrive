@@ -1,4 +1,4 @@
-package com.mijack.studyjams;
+package cn.studyjams.s220170131.mijack;
 
 import org.junit.Test;
 
