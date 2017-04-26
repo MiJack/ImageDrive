@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.media.ExifInterface;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import cn.studyjams.s220170131.mijack.entity.Folder;
@@ -13,6 +15,9 @@ import cn.studyjams.s220170131.mijack.entity.Media;
 import cn.studyjams.s220170131.mijack.util.Utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,14 +65,13 @@ public class MediaManager {
         return result;
     }
 
-    private static List<Image> getImagesFromFolder(Context context, String folder, int limit) {
+    public static List<Image> getImagesFromFolder(Context context, String folder, int limit) {
         List<Image> images = new ArrayList<>();
         ContentResolver contentResolver = context.getContentResolver();
         Uri contentUri = MediaStore.Files.getContentUri("external");
         String select = MediaStore.Images.Media.DATA + " like '" + folder + "%' and "
                 + MediaStore.Files.FileColumns.MEDIA_TYPE + "=" + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-                + ") limit " + limit + /*" order by" + MediaStore.Files.FileColumns.DATE_MODIFIED +*/ " --";
-        System.out.println(select);
+                + ") " + (limit > 0 ? ("limit " + limit) : "") + " --";
         Cursor c = contentResolver.query(contentUri, new String[]{
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.DATA,
@@ -104,6 +108,10 @@ public class MediaManager {
         return result;
     }
 
+    public static List<Image> getImagesInFolder(Context context, String folderPath) {
+        return getImagesFromFolder(context, folderPath, -1);
+    }
+
     public static List<Image> getImages(Context context) {
         List<Image> images = new ArrayList<>();
         ContentResolver contentResolver = context.getContentResolver();
@@ -134,5 +142,24 @@ public class MediaManager {
         }
         Utils.close(c);
         return images;
+    }
+
+    public static ExifInterface getExifInterface(String imagePath) {
+        try {
+            FileInputStream is = new FileInputStream(imagePath);
+            ExifInterface exifInterface = new ExifInterface(is);
+//            exifInterface.
+            return exifInterface;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void deleteFile(String path) {
+        File file = new File(path);
+        file.delete();
     }
 }

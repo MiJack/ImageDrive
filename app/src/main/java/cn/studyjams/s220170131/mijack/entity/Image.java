@@ -1,14 +1,18 @@
 package cn.studyjams.s220170131.mijack.entity;
 
 import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+
+import java.io.Serializable;
 
 /**
  * @author Mr.Yuan
  * @date 2017/4/17
  */
-public class Image extends Media{
+public class Image extends Media implements Parcelable {
     private long id;
     private long size;
     private String name;
@@ -21,7 +25,7 @@ public class Image extends Media{
     private int orientation;
 
 
-    public Image(long id,String path, long size, String name, long dateTaken, String miniType,
+    public Image(long id, String path, long size, String name, long dateTaken, String miniType,
                  int width, int height, double latitude, double longitude, int orientation) {
         super(path);
         this.id = id;
@@ -34,6 +38,10 @@ public class Image extends Media{
         this.latitude = latitude;
         this.longitude = longitude;
         this.orientation = orientation;
+    }
+
+    public Image(Parcel in) {
+        this(in.readLong(), in.readString(), in.readLong(), in.readString(), in.readLong(), in.readString(), in.readInt(), in.readInt(), in.readDouble(), in.readDouble(), in.readInt());
     }
 
     public long getId() {
@@ -132,4 +140,35 @@ public class Image extends Media{
                 c.getDouble(c.getColumnIndex(MediaStore.Images.Media.LONGITUDE)),
                 c.getInt(c.getColumnIndex(MediaStore.Images.Media.ORIENTATION)));
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(getId());
+        dest.writeString(getPath());
+        dest.writeLong(getSize());
+        dest.writeString(getName());
+        dest.writeLong(getDateTaken());
+        dest.writeString(getMiniType());
+        dest.writeInt(getWidth());
+        dest.writeInt(getHeight());
+        dest.writeDouble(getLatitude());
+        dest.writeDouble(getLongitude());
+        dest.writeInt(getOrientation());
+    }
+
+    public static final Parcelable.Creator<Image> CREATOR
+            = new Parcelable.Creator<Image>() {
+        public Image createFromParcel(Parcel in) {
+            return new Image(in);
+        }
+
+        public Image[] newArray(int size) {
+            return new Image[size];
+        }
+    };
 }

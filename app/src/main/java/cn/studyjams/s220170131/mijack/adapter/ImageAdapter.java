@@ -1,7 +1,9 @@
 package cn.studyjams.s220170131.mijack.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +13,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.MemoryCategory;
 import com.bumptech.glide.RequestManager;
+
 import cn.studyjams.s220170131.mijack.R;
 import cn.studyjams.s220170131.mijack.entity.Folder;
 import cn.studyjams.s220170131.mijack.entity.Image;
 import cn.studyjams.s220170131.mijack.entity.Media;
+import cn.studyjams.s220170131.mijack.ui.ImageDisplayActivity;
+import cn.studyjams.s220170131.mijack.ui.ImageFolderActivity;
 import cn.studyjams.s220170131.mijack.util.Utils;
 
 import java.io.File;
@@ -24,11 +29,12 @@ import java.util.List;
  * @author Mr.Yuan
  * @date 2017/4/17
  */
-public class ImageAdapter extends RecyclerView.Adapter {
+public class ImageAdapter extends RecyclerView.Adapter implements View.OnClickListener {
     public static final int ITEM_FOLDER = 0;
     public static final int ITEM_IMAGE = 1;
     public static final int SHOW_FOLDER = 3;
     public static final int SHOW_IMAGE_ONLY = 4;
+    private static final String TAG = "ImageAdapter";
     private Glide glide;
     private RequestManager requestManager;
     private List<Media> data;
@@ -39,7 +45,6 @@ public class ImageAdapter extends RecyclerView.Adapter {
     public ImageAdapter(Context context, int bigSpanCount) {
         this.bigSpanCount = bigSpanCount;
         glide = Glide.get(context);
-        glide.setMemoryCategory(MemoryCategory.LOW);
         requestManager = Glide.with(context);
     }
 
@@ -78,6 +83,7 @@ public class ImageAdapter extends RecyclerView.Adapter {
                 view = inflater.inflate(R.layout.item_image, parent, false);
                 break;
         }
+        view.setOnClickListener(this);
         return new RecyclerView.ViewHolder(view) {
         };
     }
@@ -86,6 +92,7 @@ public class ImageAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int itemViewType = getItemViewType(position);
         View root = holder.itemView;
+        root.setTag(R.id.layout_position, position);
         switch (itemViewType) {
             case ITEM_FOLDER:
                 Folder folder = (Folder) data.get(position);
@@ -132,5 +139,24 @@ public class ImageAdapter extends RecyclerView.Adapter {
         this.data = data;
         this.images = images;
         this.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int position = (int) v.getTag(R.id.layout_position);
+        int itemViewType = getItemViewType(position);
+        List data = (showType == SHOW_FOLDER ? this.data : this.images);
+        Log.d(TAG, "itemViewType:" + (itemViewType == ITEM_FOLDER ? "ITEM_FOLDER" : "ITEM_IMAGE"));
+        if (itemViewType == ITEM_FOLDER) {
+            Folder folder = (Folder) data.get(position);
+            Intent intent = new Intent(v.getContext(), ImageFolderActivity.class);
+            intent.putExtra(ImageFolderActivity.FOLDER_PATH, folder.getPath());
+            v.getContext().startActivity(intent);
+        } else if (itemViewType == ITEM_IMAGE) {
+            Image image = (Image) data.get(position);
+            Intent intent = new Intent(v.getContext(), ImageDisplayActivity.class);
+            intent.putExtra(ImageDisplayActivity.IMAGE, image);
+            v.getContext().startActivity(intent);
+        }
     }
 }

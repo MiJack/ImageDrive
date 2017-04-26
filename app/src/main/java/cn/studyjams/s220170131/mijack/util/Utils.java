@@ -1,10 +1,13 @@
 package cn.studyjams.s220170131.mijack.util;
 
+import android.content.Context;
 import android.database.Cursor;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collection;
+
+import cn.studyjams.s220170131.mijack.ui.ImageDisplayActivity;
 
 /**
  * @author Mr.Yuan
@@ -27,5 +30,9 @@ public class Utils {
                 }
             }
         }
+    }
+
+    public static int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
     }
 }

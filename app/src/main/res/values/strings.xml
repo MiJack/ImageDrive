@@ -97,4 +97,6 @@
     <string name="content_drawer_close">content_drawer_close</string>
     <string name="title_activity_account">Account</string>
     <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_image_folder">Folder</string>
+    <string name="title_activity_image_display">Image Display</string>
 </resources>
