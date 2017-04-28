@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/actionLocal"
+            android:title="Local"
+            android:icon="@drawable/ic_storage"/>
+        <item
+            android:id="@+id/actionDriver"
+            android:icon="@drawable/ic_cloud"
+            android:title="Driver" />
+        <item
+            android:id="@+id/actionBackUp"
+            android:icon="@drawable/ic_backup"
+            android:title="BackUp" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/actionSettings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
+        <item
+            android:id="@+id/actionLogout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout" />
+        <item
+            android:id="@+id/actionAbout"
+            android:icon="@drawable/ic_about"
+            android:title="About" />
+    </group>
+</menu>
