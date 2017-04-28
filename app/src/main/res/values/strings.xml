@@ -99,4 +99,6 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_image_folder">Folder</string>
     <string name="title_activity_image_display">Image Display</string>
+    <string name="title_activity_about">About</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>

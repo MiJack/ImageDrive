@@ -74,7 +74,6 @@
 
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
-                android:imeActionLabel="@string/common_google_play_services_install_text_tablet"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
         </android.support.design.widget.TextInputLayout>
