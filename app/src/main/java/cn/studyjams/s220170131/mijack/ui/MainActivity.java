@@ -3,6 +3,7 @@ package cn.studyjams.s220170131.mijack.ui;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -34,15 +35,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private static final int IMAGE_LIST_FRAGMENT = 1;
     private static final int IMAGE_DRIVER_FRAGMENT = 2;
     private static final int BACKUP_FRAGMENT = 3;
-    Toolbar toolbar;
-    DrawerLayout drawerLayout;
+    private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    NavigationHeaderView headerView;
-    NavigationView navigationView;
+    private NavigationHeaderView headerView;
+    private NavigationView navigationView;
     private FirebaseAuth firebaseAuth;
-    ImageListFragment imageListFragment;
-    ImageDriverFragment imageDriverFragment;
-    Fragment currentFragment = null;
+    private ImageListFragment imageListFragment;
+    private ImageDriverFragment imageDriverFragment;
+    private Fragment currentFragment = null;
     private BackUpFragment backUpFragment;
     private AlertDialog dialog;
 
@@ -106,6 +107,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE_LOGIN:
+                headerView.loadLoginInfo();
+                break;
+        }
     }
 
     @Override

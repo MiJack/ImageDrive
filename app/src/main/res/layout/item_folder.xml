@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:paddingBottom="8dp"
     android:paddingLeft="16dp"
+    android:background="#e0e0e0"
     android:paddingRight="16dp"
     android:paddingTop="8dp">
 
@@ -18,6 +19,5 @@
     <TextView
         android:id="@+id/folderDesc"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="asd" />
+        android:layout_height="wrap_content" />
 </LinearLayout>
