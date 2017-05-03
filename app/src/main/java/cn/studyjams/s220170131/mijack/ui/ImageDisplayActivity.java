@@ -97,7 +97,7 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
             case R.id.iconUpload:
                 DialogInterface.OnClickListener onClickListener = (DialogInterface dialog, int which) -> {
                     if (which == DialogInterface.BUTTON_POSITIVE) {
-                        uploadImage(image.getPath());
+                        uploadImage(image);
                     } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                         //nothing
                     }

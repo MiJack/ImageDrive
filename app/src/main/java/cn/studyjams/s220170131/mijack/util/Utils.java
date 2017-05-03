@@ -80,9 +80,10 @@ public class Utils {
     }
 
     public static String base64Encode(String string) {
-        return  new String(Base64.encode(string.getBytes(), Base64.DEFAULT));
+        return  new String(Base64.encode(string.getBytes(), Base64.NO_WRAP));
     }
+
     public static String base64Decode(String string) {
-        return  new String(Base64.decode(string.getBytes(), Base64.DEFAULT));
+        return  new String(Base64.decode(string.getBytes(), Base64.NO_WRAP));
     }
 }

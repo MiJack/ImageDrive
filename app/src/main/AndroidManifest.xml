@@ -36,8 +36,7 @@
             android:name=".ui.AccountActivity"
             android:label="@string/title_activity_account"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.ProfileActivity"
             android:label="@string/title_activity_profile"
@@ -60,9 +59,16 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".remote.FirebaseCloudService"
-            android:process=":remote"
-            android:exported="false"></service>
+            android:name=".firebase.FireBaseStorageService"
+            android:enabled="true"
+            android:process=":upload"
+            android:exported="true"/>
+
+        <provider
+            android:name=".database.DataBaseContentProvider"
+            android:authorities="cn.studyjams.s220170131.mijack.DataProvider"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>
