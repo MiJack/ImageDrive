@@ -171,4 +171,20 @@ public class Image extends Media implements Parcelable {
             return new Image[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Image{" +
+                "id=" + id +
+                ", size=" + size +
+                ", name='" + name + '\'' +
+                ", dateTaken=" + dateTaken +
+                ", miniType='" + miniType + '\'' +
+                ", width=" + width +
+                ", height=" + height +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", orientation=" + orientation +
+                '}';
+    }
 }

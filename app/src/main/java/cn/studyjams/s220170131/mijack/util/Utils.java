@@ -2,6 +2,7 @@ package cn.studyjams.s220170131.mijack.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Base64;
 
 import java.io.Closeable;
 import java.io.File;
@@ -76,5 +77,12 @@ public class Utils {
             return path.substring(lastIndexOf);
         }
         return null;
+    }
+
+    public static String base64Encode(String string) {
+        return  new String(Base64.encode(string.getBytes(), Base64.DEFAULT));
+    }
+    public static String base64Decode(String string) {
+        return  new String(Base64.decode(string.getBytes(), Base64.DEFAULT));
     }
 }

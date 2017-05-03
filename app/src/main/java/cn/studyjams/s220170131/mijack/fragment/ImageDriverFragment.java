@@ -42,9 +42,7 @@ public class ImageDriverFragment extends BaseFragment implements View.OnClickLis
         StorageReference reference = storage.getReferenceFromUrl("gs://fir-studyjams.appspot.com");
         StorageReference child = reference.child("test");
         child.getMetadata()
-                .addOnFailureListener(result->{
-                    System.out.println(result.getMessage());
-                })
+                .addOnFailureListener(result-> System.out.println(result.getMessage()))
                 .addOnSuccessListener(result -> {
             List<Uri> downloadUrls = result.getDownloadUrls();
             for (Uri uri : downloadUrls) {

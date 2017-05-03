@@ -1,9 +1,12 @@
 package cn.studyjams.s220170131.mijack.base;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -11,10 +14,27 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+
+import cn.studyjams.s220170131.mijack.entity.Image;
 import cn.studyjams.s220170131.mijack.remote.FirebaseCloudService;
+import cn.studyjams.s220170131.mijack.util.Utils;
 
 /**
  * @author Mr.Yuan
@@ -42,8 +62,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
 
 
     protected void uploadFolder(String path) {
-        Bundle bundle =new Bundle();
-        bundle.putString(FirebaseCloudService.PATH,path);
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseCloudService.PATH, path);
         tellService(bundle, FirebaseCloudService.UPLOAD_FOLDER);
     }
 

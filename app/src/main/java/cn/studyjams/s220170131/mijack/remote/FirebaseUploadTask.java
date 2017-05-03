@@ -2,6 +2,7 @@ package cn.studyjams.s220170131.mijack.remote;
 
 import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
@@ -42,22 +43,27 @@ public class FirebaseUploadTask implements Runnable {
         String suffix = Utils.fileSuffix(file);
         cloudName = md5 + suffix;
         StorageReference reference = firebaseManager.getStorageReference().child(cloudName);
-        StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("local path", file.getAbsolutePath())
-                .setCustomMetadata("device", Build.PRODUCT.toString())
-                .build();
         ThreadPoolExecutor threadPool = firebaseManager.getThreadPool();
-        storageTask = reference.putFile(Uri.fromFile(file), metadata)
+        storageTask = reference.putFile(Uri.fromFile(file))
                 .addOnProgressListener(threadPool,
                         taskSnapshot -> {
                             Log.d(TAG, "Progress: " + file.getName() + "\t" + taskSnapshot.getBytesTransferred() + "/" + taskSnapshot.getTotalByteCount());
                             firebaseManager.showProgressNotification(this, taskSnapshot.getBytesTransferred(), taskSnapshot.getTotalByteCount());
                         })
-                .addOnPausedListener(threadPool, taskSnapshot -> firebaseManager.showPauseNotification(FirebaseUploadTask.this))
-                .addOnFailureListener(threadPool, result -> {
+                .addOnPausedListener(taskSnapshot -> firebaseManager.showPauseNotification(FirebaseUploadTask.this))
+//                .addOnCompleteListener(threadPool,task -> {
+//                    Log.d(TAG, "addOnCompleteListener");
+//                    if (task.isSuccessful()){Log.d(TAG, "isSuccessful");
+//                        firebaseManager.showSuccessNotification(FirebaseUploadTask.this);
+//                    }else {
+//                    }
+//                })
+                .addOnFailureListener(result -> {
+                    Log.d(TAG, "addOnFailureListener");
                     firebaseManager.showFailureNotification(FirebaseUploadTask.this, result);
                 })
-                .addOnSuccessListener(threadPool, result -> {
+                .addOnSuccessListener(result -> {
+                    Log.d(TAG, "addOnSuccessListener");
                     firebaseManager.showSuccessNotification(FirebaseUploadTask.this);
                 });
     }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -14,6 +15,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -26,16 +29,19 @@ import cn.studyjams.s220170131.mijack.R;
  */
 public class FirebaseManager {
     public static final String TASK_ID = "taskId";
+    private static final String NOTIFICATION_GROUP_UPLOAD = "NOTIFICATION_GROUP_UPLOAD";
+    private static final String NOTIFICATION_GROUP_UPLOAD_FAILURE = "NOTIFICATION_GROUP_UPLOAD_FAILURE";
+    private static final String NOTIFICATION_GROUP_UPLOAD_SUCCESS = "NOTIFICATION_GROUP_UPLOAD_SUCCESS";
 
     private FirebaseAuth firebaseAuth;
     ThreadPoolExecutor threadPool;
     private Context context;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
-    SparseArray<FirebaseUploadTask> taskSparseArray;
+    Map<Integer, FirebaseUploadTask> taskSparseArray;
 
     public FirebaseManager(int nThreads) {
-        taskSparseArray = new SparseArray<>();
+        taskSparseArray = new HashMap<>();
         threadPool = new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue());
         firebaseAuth = FirebaseAuth.getInstance();
         if (!isLogin()) {
@@ -45,7 +51,9 @@ public class FirebaseManager {
     }
 
     public void setCorePoolSize(int size) {
-        threadPool.setCorePoolSize(size);
+        if (size != threadPool.getCorePoolSize()) {
+            threadPool.setCorePoolSize(size);
+        }
     }
 
     private void loadDatabase() {
@@ -69,6 +77,7 @@ public class FirebaseManager {
 
         FirebaseUploadTask uploadTask = new FirebaseUploadTask(this, uploadId, file);
         threadPool.execute(uploadTask);
+//        uploadTask.run();
         taskSparseArray.put(uploadId, uploadTask);
     }
 
@@ -77,7 +86,7 @@ public class FirebaseManager {
         File file = task.getFile();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_backup)
-                .setContentTitle(context.getString(R.string.app_name))
+                .setContentTitle(context.getString(R.string.app_name)+" Pause")
                 .setContentText(file.getName())
                 .setAutoCancel(false)
                 .addAction(-1, "cancel", FirebaseCloudService.cancelIntent(context, task))
@@ -93,34 +102,36 @@ public class FirebaseManager {
         if (totalUnits > 0) {
             percentComplete = (int) (100 * completedUnits / totalUnits);
         }
+        System.out.println(Thread.currentThread().getName());
         File file = task.getFile();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_backup)
-                .setContentTitle(context.getString(R.string.app_name))
+                .setContentTitle(context.getString(R.string.app_name)+" Progress")
                 .setContentText(file.getName())
                 .setProgress(100, percentComplete, false)
                 .setOngoing(true)
+                .setGroup(NOTIFICATION_GROUP_UPLOAD)
+                .setGroupSummary(true)
                 .setAutoCancel(false)
                 .addAction(-1, "cancel", FirebaseCloudService.cancelIntent(context, task))
-                .addAction(-1, "pause", FirebaseCloudService.pauseIntent(context,task));
+                .addAction(-1, "pause", FirebaseCloudService.pauseIntent(context, task));
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(task.getId(), builder.build());
     }
 
     public void showFailureNotification(FirebaseUploadTask task, Exception result) {
-        File file = task.getFile();
+
+        System.out.println(Thread.currentThread().getName());
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_backup)
-                .setContentTitle(context.getString(R.string.app_name))
+                .setContentTitle(context.getString(R.string.app_name)+" Failure")
                 .setContentText(result.getMessage())
                 .setShowWhen(true)
-                .setOngoing(true)
-                .setAutoCancel(false)
-                .addAction(-1, "cancel", FirebaseCloudService.cancelIntent(context,task))
-                .addAction(-1, "retry", PendingIntent.getService(context, -1,
-                        new Intent(context, FirebaseCloudService.class)
-                                .putExtra(TASK_ID, task.getId())
-                                .setAction(FirebaseCloudService.ACTION_RETRY_TASK), PendingIntent.FLAG_UPDATE_CURRENT));
+                .setGroup(NOTIFICATION_GROUP_UPLOAD_FAILURE)
+                .setGroupSummary(true)
+                .setAutoCancel(true)
+                .addAction(-1, "cancel", FirebaseCloudService.cancelIntent(context, task))
+                .addAction(-1, "retry", FirebaseCloudService.retryIntent(context, task));
 
         NotificationManager manager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -128,16 +139,21 @@ public class FirebaseManager {
     }
 
     public void showSuccessNotification(FirebaseUploadTask task) {
+
+        System.out.println(Thread.currentThread().getName());
         File file = task.getFile();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_backup)
-                .setContentTitle(context.getString(R.string.app_name))
+                .setContentTitle(context.getString(R.string.app_name)+" Success")
                 .setContentText(file.getName() + "上传成功")
-                .setShowWhen(true)
-                .setAutoCancel(false);
+                .setGroup(NOTIFICATION_GROUP_UPLOAD_SUCCESS)
+                .setGroupSummary(true)
+                .setShowWhen(true);
         NotificationManager manager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(task.getId(), builder.build());
+//        Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+        System.out.println("showSuccessNotification");
     }
 
     public void onDestroy() {
@@ -168,10 +184,14 @@ public class FirebaseManager {
     public void pause(int taskId) {
         FirebaseUploadTask task = taskSparseArray.get(taskId);
         task.pause();
+//        showPauseNotification(task);
     }
 
     public void cancel(int taskId) {
         FirebaseUploadTask task = taskSparseArray.get(taskId);
+        if (task == null) {
+            return;
+        }
         task.cancel();
         taskSparseArray.remove(taskId);
         NotificationManager notificationManager =
@@ -184,7 +204,7 @@ public class FirebaseManager {
         task.resume();
     }
 
-    public void retry(int taskId) {
-
+    public void retry(String path) {
+        submitImage(path);
     }
 }

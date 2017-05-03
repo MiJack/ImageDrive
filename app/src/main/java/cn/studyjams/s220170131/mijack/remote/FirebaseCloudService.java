@@ -23,10 +23,12 @@ public class FirebaseCloudService extends IntentService implements Handler.Callb
     public static final String ACTION_PAUSE_TASK = "cn.studyjams.s220170131.mijack.remote.FirebaseCloudService.ACTION_PAUSE_TASK";
     public static final String ACTION_RESUME_TASK = "cn.studyjams.s220170131.mijack.remote.FirebaseCloudService.ACTION_RESUME_TASK";
     public static final String ACTION_RETRY_TASK = "cn.studyjams.s220170131.mijack.remote.FirebaseCloudService.ACTION_RETRY_TASK";
+    private static final String MAX_THREAD_NUMBER = "MAX_THREAD_NUMBER";
     private Messenger messenger;
     private Handler handler;
     private FirebaseManager firebaseManager;
-
+    public static final int DEFAULT_MAX_THREAD_NUMBER = 5;
+    private int maxThreadNumber;
 
     public FirebaseCloudService() {
         super("FirebaseCloudService");
@@ -42,6 +44,14 @@ public class FirebaseCloudService extends IntentService implements Handler.Callb
         firebaseManager.onCreate(this);
     }
 
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        //获取intent中的maxThreadNum
+        maxThreadNumber = intent == null ? DEFAULT_MAX_THREAD_NUMBER : intent.getIntExtra(MAX_THREAD_NUMBER, DEFAULT_MAX_THREAD_NUMBER);
+        firebaseManager.setCorePoolSize(maxThreadNumber);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -55,6 +65,7 @@ public class FirebaseCloudService extends IntentService implements Handler.Callb
         if (action == null) {
             return;
         }
+        String path = intent.getStringExtra(PATH);
         switch (action) {
             case ACTION_CANCEL_TASK:
                 firebaseManager.cancel(taskId);
@@ -66,7 +77,9 @@ public class FirebaseCloudService extends IntentService implements Handler.Callb
                 firebaseManager.resume(taskId);
                 break;
             case ACTION_RETRY_TASK:
-                firebaseManager.retry(taskId);
+                if (path != null) {
+                    firebaseManager.retry(path);
+                }
                 break;
         }
     }
@@ -93,6 +106,7 @@ public class FirebaseCloudService extends IntentService implements Handler.Callb
         return PendingIntent.getService(context, -1,
                 new Intent(context, FirebaseCloudService.class)
                         .putExtra(TASK_ID, task.getId())
+                        .putExtra(PATH, task.getFile().getPath())
                         .setAction(FirebaseCloudService.ACTION_CANCEL_TASK), PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
@@ -100,6 +114,7 @@ public class FirebaseCloudService extends IntentService implements Handler.Callb
         return PendingIntent.getService(context, -1,
                 new Intent(context, FirebaseCloudService.class)
                         .putExtra(TASK_ID, task.getId())
+                        .putExtra(PATH, task.getFile().getPath())
                         .setAction(FirebaseCloudService.ACTION_RESUME_TASK), PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -107,6 +122,15 @@ public class FirebaseCloudService extends IntentService implements Handler.Callb
         return PendingIntent.getService(context, -1,
                 new Intent(context, FirebaseCloudService.class)
                         .putExtra(TASK_ID, task.getId())
+                        .putExtra(PATH, task.getFile().getPath())
                         .setAction(FirebaseCloudService.ACTION_PAUSE_TASK), PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public static PendingIntent retryIntent(Context context, FirebaseUploadTask task) {
+        return PendingIntent.getService(context, -1,
+                new Intent(context, FirebaseCloudService.class)
+                        .putExtra(TASK_ID, task.getId())
+                        .putExtra(PATH, task.getFile().getPath())
+                        .setAction(FirebaseCloudService.ACTION_RETRY_TASK), PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }
