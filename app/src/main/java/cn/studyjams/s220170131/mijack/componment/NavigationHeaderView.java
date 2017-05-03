@@ -70,7 +70,7 @@ public class NavigationHeaderView implements View.OnClickListener {
                     activity.startActivityForResult(intent, MainActivity.REQUEST_CODE_LOGIN);
                 } else {
                     Intent intent = new Intent(activity, ProfileActivity.class);
-                    activity.startActivityForResult(intent, MainActivity.REQUEST_CODE_LOGIN);
+                    activity.startActivity(intent);
                 }
                 break;
         }

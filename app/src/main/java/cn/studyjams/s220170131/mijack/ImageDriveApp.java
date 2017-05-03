@@ -3,6 +3,7 @@ package cn.studyjams.s220170131.mijack;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
+import com.google.firebase.FirebaseApp;
 
 /**
  * @author Mr.Yuan
@@ -12,6 +13,7 @@ public class ImageDriveApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        FirebaseApp.initializeApp(this);
         Stetho.initializeWithDefaults(this);
     }
 }
