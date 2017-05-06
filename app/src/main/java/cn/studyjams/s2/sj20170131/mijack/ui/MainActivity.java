@@ -107,6 +107,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.setGroupVisible(R.id.actionShow,currentFragment instanceof ImageListFragment);
         return true;
     }
 

@@ -19,6 +19,7 @@ public class DatabaseSQLiteOpenHelper extends SQLiteOpenHelper {
                     Database.COLUMNS_ID + " INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL," +
                     Database.COLUMNS_NAME + " VARCHAR(400)," +
                     Database.COLUMNS_PATH + " VARCHAR(400)," +
+                    Database.COLUMNS_FILE_EXTENSION_NAME + " VARCHAR(400)," +
                     Database.COLUMNS_SIZE + " INTEGER ," +
                     Database.COLUMNS_WIDTH + " INTEGER ," +
                     Database.COLUMNS_HEIGHT + " INTEGER ," +
@@ -51,6 +52,7 @@ public class DatabaseSQLiteOpenHelper extends SQLiteOpenHelper {
         String COLUMNS_GS_CLOUD_FILE_NAME = "cloudFileName";
         String COLUMNS_URL = "url";
         String COLUMNS_STATUS = "status";
+        String COLUMNS_FILE_EXTENSION_NAME = "file_extension_name";
     }
 
 }

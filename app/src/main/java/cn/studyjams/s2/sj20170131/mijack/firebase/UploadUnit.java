@@ -41,13 +41,15 @@ public class UploadUnit implements OnProgressListener<UploadTask.TaskSnapshot>,
     private FireBaseStorageService context;
     private String cloudFileName;
     private Image image;
+    private String fileExtensionName;
     private int taskId;
     Uri uri = Uri.parse("content://" + DataBaseContentProvider.AUTHORITIES + "/" + DatabaseSQLiteOpenHelper.TABLE_NAME);
 
-    public UploadUnit(FireBaseStorageService context, String cloudFileName, Image image) {
+    public UploadUnit(FireBaseStorageService context, String cloudFileName, Image image, String fileExtensionName) {
         this.context = context;
         this.cloudFileName = cloudFileName;
         this.image = image;
+        this.fileExtensionName = fileExtensionName;
         this.taskId = System.identityHashCode(this);
         manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         ContentResolver contentResolver = context.getContentResolver();
@@ -63,6 +65,7 @@ public class UploadUnit implements OnProgressListener<UploadTask.TaskSnapshot>,
                     , new String[]{cloudFileName});
         }    //添加到数据库
         ContentValues values = new ContentValues();
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_FILE_EXTENSION_NAME, fileExtensionName);
         values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_NAME, image.getName());
         values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_PATH, image.getPath());
         values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_SIZE, image.getSize());

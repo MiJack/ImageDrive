@@ -107,6 +107,7 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
                         .setMessage("同步该文件到云端？")
                         .setPositiveButton("确定", onClickListener)
                         .setNegativeButton("取消", onClickListener)
+                        .setCancelable(false)
                         .create().show();
                 break;
             case R.id.iconDelete:
