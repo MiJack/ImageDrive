@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "cn.studyjams.s220170131.mijack"
+        applicationId "cn.studyjams.s2.sj20170131.mijack"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1

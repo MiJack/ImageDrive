@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="cn.studyjams.s220170131.mijack.ui.ScrollingActivity"
+    tools:context="cn.studyjams.s2.sj20170131.mijack.ui.ScrollingActivity"
     tools:showIn="@layout/activity_scrolling">
 
     <TextView

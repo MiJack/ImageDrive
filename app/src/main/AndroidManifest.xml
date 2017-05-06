@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.studyjams.s220170131.mijack">
+    package="cn.studyjams.s2.sj20170131.mijack">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -66,7 +66,7 @@
 
         <provider
             android:name=".database.DataBaseContentProvider"
-            android:authorities="cn.studyjams.s220170131.mijack.DataProvider"
+            android:authorities="cn.studyjams.s2.sj20170131.mijack.DataProvider"
             android:enabled="true"
             android:exported="true" />
     </application>
