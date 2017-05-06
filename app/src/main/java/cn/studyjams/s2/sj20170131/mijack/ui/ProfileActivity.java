@@ -19,6 +19,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import cn.studyjams.s2.sj20170131.mijack.R;
 import cn.studyjams.s2.sj20170131.mijack.base.BaseActivity;
 import cn.studyjams.s2.sj20170131.mijack.util.TextHelper;
+import cn.studyjams.s2.sj20170131.mijack.util.Utils;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends BaseActivity {
@@ -53,10 +54,10 @@ public class ProfileActivity extends BaseActivity {
         editNickName.getEditText().setText(user.getDisplayName());
         editEmail.getEditText().setText(user.getEmail());
         System.out.println("photo uri:" + user.getPhotoUrl());
-        if (!TextUtils.isEmpty(user.getPhotoUrl().toString())) {
+        if (!Utils.isEmpty(user.getPhotoUrl())) {
             Glide.with(this).load(user.getPhotoUrl()).into(circleImageView);
         } else {
-            Glide.with(this).load(R.drawable.ic_profile).into(circleImageView);
+            circleImageView.setImageResource(R.drawable.ic_empty_profile);
         }
     }
 

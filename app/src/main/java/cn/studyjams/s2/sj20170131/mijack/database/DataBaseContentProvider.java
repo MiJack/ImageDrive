@@ -29,11 +29,31 @@ public class DataBaseContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return sqLiteOpenHelper.getWritableDatabase().delete(getTableName(uri), selection, selectionArgs);
+        String tableName = getTableNameIfExist(uri);
+        if (tableName == null) {
+            return -1;
+        }
+        return getWritableDatabase().delete(tableName, selection, selectionArgs);
     }
 
     private String getTableName(Uri uri) {
         return getType(uri);
+    }
+
+    private String getTableNameIfExist(Uri uri) {
+        String tableName = getTableName(uri);
+        if (tableName != null) {
+            Cursor cursor = getWritableDatabase().rawQuery("SELECT name FROM sqlite_master WHERE type = \"table\"", null);
+            if (cursor.moveToFirst()) {
+                do {
+                    String name = cursor.getString(cursor.getColumnIndex("name"));
+                    if (tableName.equals(name)) {
+                        return tableName;
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+        return null;
     }
 
     @Override
@@ -47,21 +67,37 @@ public class DataBaseContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        sqLiteOpenHelper.getWritableDatabase().insert(getTableName(uri), null, values);
+        String tableName = getTableNameIfExist(uri);
+        if (tableName == null) {
+            return null;
+        }
+        getWritableDatabase().insert(tableName, null, values);
         return uri;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        return sqLiteOpenHelper.getWritableDatabase()
-                .query(getTableName(uri), projection, selection, selectionArgs, null, null, sortOrder);
+        String tableName = getTableNameIfExist(uri);
+        if (tableName == null) {
+            return null;
+        }
+        return getWritableDatabase()
+                .query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
+    }
+
+    private SQLiteDatabase getWritableDatabase() {
+        return sqLiteOpenHelper.getWritableDatabase();
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        return sqLiteOpenHelper.getWritableDatabase()
-                .update(getTableName(uri), values, selection, selectionArgs);
+        String tableName = getTableNameIfExist(uri);
+        if (tableName == null) {
+            return -1;
+        }
+        return getWritableDatabase()
+                .update(tableName, values, selection, selectionArgs);
     }
 }

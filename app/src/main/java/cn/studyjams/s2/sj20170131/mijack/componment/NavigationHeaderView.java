@@ -3,6 +3,7 @@ package cn.studyjams.s2.sj20170131.mijack.componment;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import cn.studyjams.s2.sj20170131.mijack.R;
 import cn.studyjams.s2.sj20170131.mijack.ui.AccountActivity;
 import cn.studyjams.s2.sj20170131.mijack.ui.MainActivity;
 import cn.studyjams.s2.sj20170131.mijack.ui.ProfileActivity;
+import cn.studyjams.s2.sj20170131.mijack.util.Utils;
 
 /**
  * @author Mr.Yuan
@@ -50,12 +52,15 @@ public class NavigationHeaderView implements View.OnClickListener {
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         item.setVisible(currentUser != null);
         if (currentUser == null) {
-            profileView.setImageResource(R.drawable.ic_empty_profile);
             email.setText("");
             nickName.setText("");
         } else {
             email.setText(currentUser.getEmail());
             nickName.setText(currentUser.getDisplayName());
+        }
+        if (currentUser == null || Utils.isEmpty(currentUser.getPhotoUrl())) {
+            profileView.setImageResource(R.drawable.ic_empty_profile);
+        } else {
             Glide.with(profileView.getContext()).load(currentUser.getPhotoUrl()).into(profileView);
         }
     }

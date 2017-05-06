@@ -48,6 +48,7 @@ public class ImageListFragment extends BaseFragment implements SwipeRefreshLayou
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         int span = 6;
         imageAdapter = new ImageAdapter(getActivity(), span);
+        imageAdapter.setShowType(ImageAdapter.SHOW_FOLDER);
         gridLayoutManager = new GridLayoutManager(getActivity(), span);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -86,7 +87,6 @@ public class ImageListFragment extends BaseFragment implements SwipeRefreshLayou
         List<Media> media = MediaManager.flatFolder(MediaManager.getImageFolderWithImages(getActivity(), 12));
         recyclerView.setAdapter(imageAdapter);
         List<Image> images = MediaManager.getImages(getActivity());
-        imageAdapter.setShowType(ImageAdapter.SHOW_FOLDER);
         imageAdapter.setData(media, images);
         swipeRefreshLayout.setRefreshing(false);
     }

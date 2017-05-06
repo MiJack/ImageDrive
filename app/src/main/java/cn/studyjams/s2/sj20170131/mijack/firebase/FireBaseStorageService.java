@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
@@ -112,14 +113,19 @@ public class FireBaseStorageService extends Service {
         //设备-path-md5.
         File file = new File(image.getPath());
         String md5 = Utils.fileMD5(file);
-        String suffix = Utils.fileSuffix(file);
+        String fileExtensionName = Utils.fileExtensionName(file);
         String device = Build.DEVICE;
-        String cloudFileName = Utils.base64Encode(device + "-" + image.getPath() + "-" + md5) + "." + suffix;
+        String cloudFileName = Utils.base64Encode(device + "-" + image.getPath() + "-" + md5) + "." + fileExtensionName;
         System.out.println(cloudFileName);
-        UploadUnit callBack = new UploadUnit(this, cloudFileName, image);
+        UploadUnit callBack = new UploadUnit(this, cloudFileName, image,fileExtensionName);
         StorageReference reference = firebaseStorage.getReference()
                 .child("image").child(firebaseAuth.getCurrentUser().getUid());
-        StorageTask<UploadTask.TaskSnapshot> storageTask = reference.child(cloudFileName).putFile(Uri.fromFile(file))
+        StorageMetadata.Builder builder =new StorageMetadata.Builder()
+                .setCustomMetadata("localPath",image.getPath())
+                .setCustomMetadata("device",Build.DEVICE)
+                .setCustomMetadata("deviceId",Build.ID);
+        StorageTask<UploadTask.TaskSnapshot> storageTask = reference.child(cloudFileName)
+                .putFile(Uri.fromFile(file),builder.build())
                 .addOnProgressListener(callBack)
                 .addOnSuccessListener(callBack)
                 .addOnFailureListener(callBack)

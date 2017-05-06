@@ -2,6 +2,8 @@ package cn.studyjams.s2.sj20170131.mijack.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import java.io.Closeable;
@@ -70,7 +72,7 @@ public class Utils {
         return value;
     }
 
-    public static String fileSuffix(File file) {
+    public static String fileExtensionName(File file) {
         String path = file.getPath();
         int lastIndexOf = path.lastIndexOf(".");
         if (lastIndexOf > 0) {
@@ -80,10 +82,14 @@ public class Utils {
     }
 
     public static String base64Encode(String string) {
-        return  new String(Base64.encode(string.getBytes(), Base64.NO_WRAP));
+        return new String(Base64.encode(string.getBytes(), Base64.NO_WRAP));
     }
 
     public static String base64Decode(String string) {
-        return  new String(Base64.decode(string.getBytes(), Base64.NO_WRAP));
+        return new String(Base64.decode(string.getBytes(), Base64.NO_WRAP));
+    }
+
+    public static boolean isEmpty(Uri uri) {
+        return uri == null || TextUtils.isEmpty(uri.toString());
     }
 }
