@@ -1,12 +1,18 @@
 package cn.studyjams.s2.sj20170131.mijack.ui;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.media.ExifInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,8 +24,20 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +45,19 @@ import cn.studyjams.s2.sj20170131.mijack.R;
 import cn.studyjams.s2.sj20170131.mijack.adapter.ExitAttributeAdapter;
 import cn.studyjams.s2.sj20170131.mijack.base.BaseActivity;
 import cn.studyjams.s2.sj20170131.mijack.core.MediaManager;
+import cn.studyjams.s2.sj20170131.mijack.database.DataBaseContentProvider;
+import cn.studyjams.s2.sj20170131.mijack.database.DatabaseSQLiteOpenHelper;
 import cn.studyjams.s2.sj20170131.mijack.entity.Image;
+import cn.studyjams.s2.sj20170131.mijack.entity.UploadStatus;
+import cn.studyjams.s2.sj20170131.mijack.util.Utils;
 
 /**
  * @author Mr.Yuan
  * @date 2017/4/26
  */
-public class ImageDisplayActivity extends BaseActivity implements View.OnClickListener {
+public class ImageDisplayActivity extends BaseActivity implements View.OnClickListener, OnProgressListener<UploadTask.TaskSnapshot>,
+        OnSuccessListener<UploadTask.TaskSnapshot>, OnFailureListener, OnPausedListener<UploadTask.TaskSnapshot> {
+    Uri uri = Uri.parse("content://" + DataBaseContentProvider.AUTHORITIES + "/" + DatabaseSQLiteOpenHelper.TABLE_NAME);
     public static final String IMAGE = "image";
     private static final String TAG = "ImageDisplayActivity";
     private Image image;
@@ -43,8 +67,11 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
     private ImageView iconDelete;
     private ImageView iconInfo;
     private ImageView[] icons = new ImageView[4];
-    private ConstraintLayout contentPanel;
+    private CoordinatorLayout coordinatorLayout;
     private ExifInterface exifInterface;
+    private MaterialDialog dialog;
+    private StorageTask<UploadTask.TaskSnapshot> storageTask;
+    private String cloudFileName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +90,7 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
         iconUpload = (ImageView) findViewById(R.id.iconUpload);
         iconDelete = (ImageView) findViewById(R.id.iconDelete);
         iconInfo = (ImageView) findViewById(R.id.iconInfo);
-        contentPanel = (ConstraintLayout) findViewById(R.id.contentPanel);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         icons[0] = iconShare;
         icons[1] = iconUpload;
         icons[2] = iconDelete;
@@ -95,20 +122,18 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
                 startActivity(Intent.createChooser(intent, "Share image using"));
                 break;
             case R.id.iconUpload:
-                DialogInterface.OnClickListener onClickListener = (DialogInterface dialog, int which) -> {
-                    if (which == DialogInterface.BUTTON_POSITIVE) {
-                        uploadImage(image);
-                    } else if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        //nothing
-                    }
-                };
-                new AlertDialog.Builder(this)
-                        .setTitle("同步")
-                        .setMessage("同步该文件到云端？")
-                        .setPositiveButton("确定", onClickListener)
-                        .setNegativeButton("取消", onClickListener)
-                        .setCancelable(false)
-                        .create().show();
+                new MaterialDialog.Builder(this)
+                        .title("同步")
+                        .content("同步该文件到云端？")
+                        .autoDismiss(false)
+                        .positiveText("确定")
+                        .onPositive((materialDialog, dialogAction) -> {
+                            uploadImage(image);
+                            materialDialog.dismiss();
+                        })
+                        .negativeText("取消")
+                        .onNegative((materialDialog, dialogAction) -> materialDialog.dismiss())
+                        .show();
                 break;
             case R.id.iconDelete:
                 DialogInterface.OnClickListener dialogInterface = (DialogInterface dialog, int which) -> {
@@ -145,6 +170,72 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
                 dialog.show();
                 break;
         }
+    }
+
+    private void uploadImage(Image image) {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() == null) {
+            new MaterialDialog.Builder(this)
+                    .title("请登录").content("请登录后再上传文件")
+                    .cancelable(false)
+                    .negativeText("确定")
+                    .onNegative((materialDialog, dialogAction) -> {
+                        materialDialog.dismiss();
+                    }).build().show();
+            return;
+        }
+        FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+        File file = new File(image.getPath());
+        String md5 = Utils.fileMD5(file);
+        String fileExtensionName = Utils.fileExtensionName(file);
+        String device = Build.DEVICE;
+        cloudFileName = Utils.base64Encode(device + "-" + image.getPath() + "-" + md5) + fileExtensionName;
+        System.out.println(cloudFileName);
+        StorageReference reference = firebaseStorage.getReference()
+                .child("image").child(firebaseAuth.getCurrentUser().getUid());
+        StorageMetadata.Builder builder = new StorageMetadata.Builder()
+                .setCustomMetadata("localPath", image.getPath())
+                .setCustomMetadata("device", Build.DEVICE)
+                .setCustomMetadata("deviceId", Build.ID);
+        dialog = new MaterialDialog.Builder(this)
+                .title("upload")
+                .progress(false, 100, true)
+                .negativeText("cancel")
+                .onNegative((materialDialog, dialogAction) -> {
+                    if (storageTask != null) {
+                        storageTask.cancel();
+                    }
+                }).build();
+        dialog.show();
+        storageTask = reference.child(cloudFileName)
+                .putFile(Uri.fromFile(file), builder.build())
+                .addOnProgressListener(this, this)
+                .addOnSuccessListener(this, this)
+                .addOnFailureListener(this, this)
+                .addOnPausedListener(this, this);
+        ContentResolver contentResolver = getContentResolver();
+        //查询是否存在
+        Cursor cursor = contentResolver.query(uri,
+                new String[]{"count(*) as count "},
+                DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
+                , new String[]{cloudFileName}, null);
+        if (cursor.getCount() > 0) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.start.name());
+            contentResolver.delete(uri, DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
+                    , new String[]{cloudFileName});
+        }    //添加到数据库
+        ContentValues values = new ContentValues();
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_FILE_EXTENSION_NAME, fileExtensionName);
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_NAME, image.getName());
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_PATH, image.getPath());
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_SIZE, image.getSize());
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_WIDTH, image.getWidth());
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_HEIGHT, image.getHeight());
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME, cloudFileName);
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.start.name());
+        contentResolver.insert(uri, values);
+
     }
 
     public static final String[] EXIF_INTERFACE_ATTRIBUTES = new String[]{
@@ -204,4 +295,47 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
 //　　FileSource源文件 Compression压缩比。
     };
 
+    @Override
+    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+        long totalByteCount = taskSnapshot.getTotalByteCount();
+        long bytesTransferred = taskSnapshot.getBytesTransferred();
+        dialog.setProgress((int) (100 * bytesTransferred / totalByteCount));
+    }
+
+    @Override
+    public void onFailure(@NonNull Exception e) {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+        Snackbar.make(coordinatorLayout, "上传失败", Snackbar.LENGTH_SHORT).show();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.failure.name());
+        getContentResolver().update(uri, values, DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
+                , new String[]{cloudFileName});
+    }
+
+    @Override
+    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+        Snackbar.make(coordinatorLayout, "上传成功", Snackbar.LENGTH_SHORT).show();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.success.name());
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_URL, taskSnapshot.getDownloadUrl().toString());
+        getContentResolver().update(uri, values, DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
+                , new String[]{cloudFileName});
+
+    }
+
+    @Override
+    public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+        ContentValues values = new ContentValues();
+        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.pause.name());
+        getContentResolver().update(uri, values, DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
+                , new String[]{cloudFileName});
+    }
 }
