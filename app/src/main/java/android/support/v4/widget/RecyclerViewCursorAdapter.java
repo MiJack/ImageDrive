@@ -23,7 +23,6 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
     protected boolean mAutoRequery;
     protected Cursor mCursor;
     protected Context mContext;
-    protected Context mDropDownContext;
     protected int mRowIDColumn;
     protected ChangeObserver mChangeObserver;
     protected DataSetObserver mDataSetObserver;

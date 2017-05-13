@@ -53,13 +53,8 @@
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <service
-            android:name=".firebase.FireBaseStorageService"
-            android:enabled="true"
-            android:process=":upload"
-            android:exported="true"/>
-
+        <activity android:name=".ui.UploadImageDialog" android:label="upload"
+            android:theme="@style/AppTheme.Dialog"/>
         <provider
             android:name=".database.DataBaseContentProvider"
             android:authorities="cn.studyjams.s2.sj20170131.mijack.DataProvider"

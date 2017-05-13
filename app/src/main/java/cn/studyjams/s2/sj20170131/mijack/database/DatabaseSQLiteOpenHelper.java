@@ -43,7 +43,7 @@ public class DatabaseSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     public interface Database extends BaseColumns {
-        String COLUMNS_ID = "id";
+        String COLUMNS_ID = _ID;
         String COLUMNS_NAME = "name";
         String COLUMNS_PATH = "path";
         String COLUMNS_SIZE = "size";

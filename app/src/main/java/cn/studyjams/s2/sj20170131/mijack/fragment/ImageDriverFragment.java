@@ -25,7 +25,7 @@ import cn.studyjams.s2.sj20170131.mijack.database.DatabaseSQLiteOpenHelper;
  * @date 2017/4/28
  */
 public class ImageDriverFragment extends BaseFragment
-        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+        implements SwipeRefreshLayout.OnRefreshListener,
         LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
     RecyclerView recyclerView;
@@ -50,11 +50,6 @@ public class ImageDriverFragment extends BaseFragment
         storageImageAdapter = new FirebaseStorageAdapter(getActivity(), null, true);
         recyclerView.setAdapter(storageImageAdapter);
         getLoaderManager().initLoader(LOADER_ID, null, this);
-    }
-
-    @Override
-    public void onClick(View v) {
-
     }
 
     @Override
