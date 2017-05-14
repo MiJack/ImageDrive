@@ -107,7 +107,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.setGroupVisible(R.id.actionShow,currentFragment instanceof ImageListFragment);
+        menu.setGroupVisible(R.id.actionShow, currentFragment instanceof ImageListFragment);
         return true;
     }
 
@@ -137,6 +137,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.actionProfile:
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.actionDriver:
                 drawerLayout.closeDrawer(Gravity.LEFT);
                 switchFragment(IMAGE_DRIVER_FRAGMENT);

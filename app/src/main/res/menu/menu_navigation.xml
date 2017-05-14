@@ -3,8 +3,8 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/actionLocal"
-            android:title="Local"
-            android:icon="@drawable/ic_storage"/>
+            android:icon="@drawable/ic_storage"
+            android:title="Local" />
         <item
             android:id="@+id/actionDriver"
             android:icon="@drawable/ic_cloud"
@@ -12,13 +12,19 @@
         <item
             android:id="@+id/actionBackUp"
             android:icon="@drawable/ic_backup"
-            android:title="BackUp" />
+            android:title="BackUp"
+            android:visible="false" />
+        <item
+            android:id="@+id/actionProfile"
+            android:icon="@drawable/ic_settings"
+            android:title="Profile" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/actionSettings"
             android:icon="@drawable/ic_settings"
-            android:title="Settings" />
+            android:title="Settings"
+            android:visible="false" />
         <item
             android:id="@+id/actionLogout"
             android:icon="@drawable/ic_logout"

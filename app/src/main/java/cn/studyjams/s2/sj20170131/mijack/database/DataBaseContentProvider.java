@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 public class DataBaseContentProvider extends ContentProvider {
     SQLiteOpenHelper sqLiteOpenHelper;
@@ -40,6 +41,7 @@ public class DataBaseContentProvider extends ContentProvider {
         return getType(uri);
     }
 
+    @Nullable
     private String getTableNameIfExist(Uri uri) {
         String tableName = getTableName(uri);
         if (tableName != null) {

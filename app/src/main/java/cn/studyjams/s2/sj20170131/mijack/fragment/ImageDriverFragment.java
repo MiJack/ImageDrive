@@ -1,6 +1,8 @@
 package cn.studyjams.s2.sj20170131.mijack.fragment;
 
 import android.database.Cursor;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,8 +10,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +33,6 @@ public class ImageDriverFragment extends BaseFragment
     private static final int LOADER_ID = 1;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayoutManager linearLayoutManager;
     FirebaseStorageAdapter storageImageAdapter;
 
     @Nullable
@@ -45,8 +47,8 @@ public class ImageDriverFragment extends BaseFragment
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(linearLayoutManager);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
         storageImageAdapter = new FirebaseStorageAdapter(getActivity(), null, true);
         recyclerView.setAdapter(storageImageAdapter);
         getLoaderManager().initLoader(LOADER_ID, null, this);
@@ -54,7 +56,7 @@ public class ImageDriverFragment extends BaseFragment
 
     @Override
     public void onRefresh() {
-
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -70,8 +72,8 @@ public class ImageDriverFragment extends BaseFragment
         if (storageImageAdapter == null) {
             storageImageAdapter = new FirebaseStorageAdapter(getActivity(), data, true);
             recyclerView.setAdapter(storageImageAdapter);
-//            mShowList.setAdapter(mShowsAdapter);
         }
+        swipeRefreshLayout.setRefreshing(false);
         storageImageAdapter.swapCursor(data);
     }
 
