@@ -1,10 +1,8 @@
 package cn.studyjams.s2.sj20170131.mijack.ui;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +27,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
@@ -40,86 +40,187 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.studyjams.s2.sj20170131.mijack.R;
 import cn.studyjams.s2.sj20170131.mijack.adapter.ExitAttributeAdapter;
 import cn.studyjams.s2.sj20170131.mijack.base.BaseActivity;
 import cn.studyjams.s2.sj20170131.mijack.core.MediaManager;
-import cn.studyjams.s2.sj20170131.mijack.database.DataBaseContentProvider;
-import cn.studyjams.s2.sj20170131.mijack.database.DatabaseSQLiteOpenHelper;
+import cn.studyjams.s2.sj20170131.mijack.entity.FirebaseImage;
 import cn.studyjams.s2.sj20170131.mijack.entity.Image;
-import cn.studyjams.s2.sj20170131.mijack.entity.UploadStatus;
 import cn.studyjams.s2.sj20170131.mijack.util.Utils;
 
 /**
  * @author Mr.Yuan
  * @date 2017/4/26
  */
-public class ImageDisplayActivity extends BaseActivity implements View.OnClickListener, OnProgressListener<UploadTask.TaskSnapshot>,
+public class ImageDisplayActivity extends BaseActivity implements OnProgressListener<UploadTask.TaskSnapshot>,
         OnSuccessListener<UploadTask.TaskSnapshot>, OnFailureListener, OnPausedListener<UploadTask.TaskSnapshot> {
-    Uri uri = Uri.parse("content://" + DataBaseContentProvider.AUTHORITIES + "/" + DatabaseSQLiteOpenHelper.TABLE_NAME);
     public static final String IMAGE = "image";
     private static final String TAG = "ImageDisplayActivity";
+    public static final String DOWNLOAD_URL = "downloadUrl";
+    public static final String TYPE = "type";
+    public static final String LOCAL_FILE = "localFile";
+    public static final String FIREBASE_STORAGE = "firebaseStorage";
     private Image image;
     private ImageView imageView;
     private ImageView iconShare;
     private ImageView iconUpload;
     private ImageView iconDelete;
     private ImageView iconInfo;
-    private ImageView[] icons = new ImageView[4];
+    private List<ImageView> icons = new ArrayList<>();
     private CoordinatorLayout coordinatorLayout;
     private ExifInterface exifInterface;
     private MaterialDialog dialog;
     private StorageTask<UploadTask.TaskSnapshot> storageTask;
     private String cloudFileName;
+    private String type;
+    private FirebaseImage firebaseImage;
+    private ImageView iconDownload;
+
+
+    public static void showLocalImage(Context context, Image image) {
+        Intent intent = new Intent(context, ImageDisplayActivity.class)
+                .putExtra(IMAGE, image)
+                .putExtra(TYPE, LOCAL_FILE);
+        context.startActivity(intent);
+    }
+
+    public static void showFirebaseImage(Context context, FirebaseImage firebaseImage) {
+        Intent intent = new Intent(context, ImageDisplayActivity.class)
+                .putExtra(DOWNLOAD_URL, firebaseImage)
+                .putExtra(TYPE, FIREBASE_STORAGE);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_display);
-        Intent intent = getIntent();
-        if (intent == null || !intent.hasExtra(IMAGE)) {
-            return;
-        }
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        image = intent.getParcelableExtra(IMAGE);
-        Log.d(TAG, "onCreate: image:" + image.getPath());
-        exifInterface = MediaManager.getExifInterface(image.getPath());
         imageView = (ImageView) findViewById(R.id.imageView);
         iconShare = (ImageView) findViewById(R.id.iconShare);
         iconUpload = (ImageView) findViewById(R.id.iconUpload);
+        iconDownload = (ImageView) findViewById(R.id.iconDownload);
         iconDelete = (ImageView) findViewById(R.id.iconDelete);
         iconInfo = (ImageView) findViewById(R.id.iconInfo);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        icons[0] = iconShare;
-        icons[1] = iconUpload;
-        icons[2] = iconDelete;
-        icons[3] = iconInfo;
-        iconShare.setOnClickListener(this);
-        iconUpload.setOnClickListener(this);
-        iconDelete.setOnClickListener(this);
-        iconInfo.setOnClickListener(this);
+        Intent intent = getIntent();
+        if (intent == null || !intent.hasExtra(TYPE)) {
+            return;
+        }
+        type = intent.getStringExtra(TYPE);
+        if (LOCAL_FILE.equals(type) && intent.hasExtra(IMAGE)) {
+            image = intent.getParcelableExtra(IMAGE);
+            exifInterface = MediaManager.getExifInterface(image.getPath());
+            Log.d(TAG, "onCreate: image:" + image.getPath());
+            Glide.with(imageView.getContext())
+                    .load(image.getPath())
+                    .placeholder(R.drawable.ic_picture_filled)
+                    .into(imageView);
+        } else if (FIREBASE_STORAGE.equals(type) && intent.hasExtra(DOWNLOAD_URL)) {
+            firebaseImage = intent.getParcelableExtra(DOWNLOAD_URL);
+            String url=firebaseImage.getDownloadUrl();
+            Log.d(TAG, "onCreate: url:" + url);
+            Glide.with(imageView.getContext())
+                    .load(url)
+                    .placeholder(R.drawable.ic_picture_filled)
+                    .into(imageView);
+        } else {
+            return;
+        }
+        icons.add(iconShare);
+        icons.add(iconUpload);
+        icons.add(iconDelete);
+        icons.add(iconInfo);
+        icons.add(iconDownload);
+        for (int i = 0; i < icons.size(); i++) {
+            icons.get(i).setOnClickListener((LOCAL_FILE.equals(type)) ? this::handleLocalFile : this::handleFirebaseFile);
+        }
         showIcons(true);
-        Glide.with(imageView.getContext())
-                .load(image.getPath())
-                .placeholder(R.drawable.ic_picture_filled)
-                .into(imageView);
     }
 
-    private void showIcons(boolean show) {
-        for (int i = 0; i < icons.length; i++) {
-            icons[i].setVisibility(show ? View.VISIBLE : View.GONE);
+    public void handleFirebaseFile(View v) {
+        switch (v.getId()) {
+            case R.id.iconShare:
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setData(Uri.parse(firebaseImage.getDownloadUrl()));
+                intent.setType(firebaseImage.getMiniType());
+                startActivity(Intent.createChooser(intent, "Share image using"));
+                break;
+            case R.id.iconDownload:
+                new MaterialDialog.Builder(this)
+                        .title("下载")
+                        .content("将该文件到本地？")
+                        .autoDismiss(false)
+                        .positiveText("确定")
+                        .onPositive((materialDialog, dialogAction) -> {
+                            materialDialog.dismiss();
+                            downloadImage();
+                        })
+                        .negativeText("取消")
+                        .onNegative((materialDialog, dialogAction) -> materialDialog.dismiss())
+                        .show();
+                break;
+            case R.id.iconDelete:
+                DialogInterface.OnClickListener dialogInterface = (DialogInterface dialog, int which) -> {
+                    if (which == DialogInterface.BUTTON_POSITIVE) {
+//                        MediaManager.deleteFile(image.getPath());
+//                        finish();
+                    } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        //nothing
+                    }
+                };
+                new AlertDialog.Builder(this)
+                        .setTitle("删除")
+                        .setMessage("你确定要删除吗？")
+                        .setPositiveButton("确定", dialogInterface)
+                        .setNegativeButton("取消", dialogInterface)
+                        .create().show();
+                break;
+            case R.id.iconInfo:
+                break;
         }
     }
 
-    @Override
-    public void onClick(View v) {
+    private void showIcons(boolean show) {
+        for (int i = 0; i < icons.size(); i++) {
+            ImageView imageView = icons.get(i);
+            switch (imageView.getId()) {
+                case R.id.iconDownload:
+                    imageView.setVisibility((show && FIREBASE_STORAGE.equals(type)) ? View.VISIBLE : View.GONE);
+                    break;
+                case R.id.iconUpload:
+                    imageView.setVisibility((show && LOCAL_FILE.equals(type)) ? View.VISIBLE : View.GONE);
+                    break;
+                default:
+                    imageView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        }
+    }
+
+    public void handleLocalFile(View v) {
         switch (v.getId()) {
             case R.id.iconShare:
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setData(Uri.parse(image.getPath()));
                 intent.setType(image.getMiniType());
                 startActivity(Intent.createChooser(intent, "Share image using"));
+                break;
+            case R.id.iconDownload:
+                new MaterialDialog.Builder(this)
+                        .title("下载")
+                        .content("将该文件到本地？")
+                        .autoDismiss(false)
+                        .positiveText("确定")
+                        .onPositive((materialDialog, dialogAction) -> {
+                            materialDialog.dismiss();
+                            downloadImage();
+                        })
+                        .negativeText("取消")
+                        .onNegative((materialDialog, dialogAction) -> materialDialog.dismiss())
+                        .show();
                 break;
             case R.id.iconUpload:
                 new MaterialDialog.Builder(this)
@@ -172,6 +273,10 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
         }
     }
 
+    private void downloadImage() {
+
+    }
+
     private void uploadImage(Image image) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() == null) {
@@ -193,12 +298,9 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
         System.out.println(cloudFileName);
         StorageReference reference = firebaseStorage.getReference()
                 .child("image").child(firebaseAuth.getCurrentUser().getUid());
-        StorageMetadata.Builder builder = new StorageMetadata.Builder()
-                .setCustomMetadata("localPath", image.getPath())
-                .setCustomMetadata("device", Build.DEVICE)
-                .setCustomMetadata("deviceId", Build.ID);
         dialog = new MaterialDialog.Builder(this)
                 .title("upload")
+                .cancelable(false)
                 .progress(false, 100, true)
                 .negativeText("cancel")
                 .onNegative((materialDialog, dialogAction) -> {
@@ -208,34 +310,11 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
                 }).build();
         dialog.show();
         storageTask = reference.child(cloudFileName)
-                .putFile(Uri.fromFile(file), builder.build())
+                .putFile(Uri.fromFile(file))
                 .addOnProgressListener(this, this)
                 .addOnSuccessListener(this, this)
                 .addOnFailureListener(this, this)
                 .addOnPausedListener(this, this);
-        ContentResolver contentResolver = getContentResolver();
-        //查询是否存在
-        Cursor cursor = contentResolver.query(uri,
-                new String[]{"count(*) as count "},
-                DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
-                , new String[]{cloudFileName}, null);
-        if (cursor.getCount() > 0) {
-            ContentValues values = new ContentValues();
-            values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.start.name());
-            contentResolver.delete(uri, DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
-                    , new String[]{cloudFileName});
-        }    //添加到数据库
-        ContentValues values = new ContentValues();
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_FILE_EXTENSION_NAME, fileExtensionName);
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_NAME, image.getName());
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_PATH, image.getPath());
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_SIZE, image.getSize());
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_WIDTH, image.getWidth());
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_HEIGHT, image.getHeight());
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME, cloudFileName);
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.start.name());
-        contentResolver.insert(uri, values);
-
     }
 
     public static final String[] EXIF_INTERFACE_ATTRIBUTES = new String[]{
@@ -308,10 +387,6 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
             dialog.dismiss();
         }
         Snackbar.make(coordinatorLayout, "上传失败", Snackbar.LENGTH_SHORT).show();
-        ContentValues values = new ContentValues();
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.failure.name());
-        getContentResolver().update(uri, values, DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
-                , new String[]{cloudFileName});
     }
 
     @Override
@@ -320,11 +395,19 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
             dialog.dismiss();
         }
         Snackbar.make(coordinatorLayout, "上传成功", Snackbar.LENGTH_SHORT).show();
-        ContentValues values = new ContentValues();
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.success.name());
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_URL, taskSnapshot.getDownloadUrl().toString());
-        getContentResolver().update(uri, values, DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
-                , new String[]{cloudFileName});
+        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+        Pattern pattern = Pattern.compile("^image/([^/]+)(?:/.*)$");
+        StorageMetadata metadata = taskSnapshot.getMetadata();
+        String fsUrl = metadata.getPath();
+        Matcher matcher = pattern.matcher(metadata.getPath());
+        if (matcher.matches()) {
+            String uid = matcher.group(1);
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            DatabaseReference reference = firebaseDatabase.getReference("images").child("users").child(uid);
+            FirebaseImage fsImage = new FirebaseImage(image, downloadUrl, fsUrl);
+            DatabaseReference push = reference.push();
+            push.updateChildren(fsImage.toMap());
+        }
 
     }
 
@@ -333,9 +416,6 @@ public class ImageDisplayActivity extends BaseActivity implements View.OnClickLi
         if (dialog != null) {
             dialog.dismiss();
         }
-        ContentValues values = new ContentValues();
-        values.put(DatabaseSQLiteOpenHelper.Database.COLUMNS_STATUS, UploadStatus.pause.name());
-        getContentResolver().update(uri, values, DatabaseSQLiteOpenHelper.Database.COLUMNS_GS_CLOUD_FILE_NAME + "=?"
-                , new String[]{cloudFileName});
     }
+
 }

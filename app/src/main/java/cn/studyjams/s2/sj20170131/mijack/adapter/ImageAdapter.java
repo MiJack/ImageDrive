@@ -154,9 +154,7 @@ public class ImageAdapter extends RecyclerView.Adapter implements View.OnClickLi
             v.getContext().startActivity(intent);
         } else if (itemViewType == ITEM_IMAGE) {
             Image image = (Image) data.get(position);
-            Intent intent = new Intent(v.getContext(), ImageDisplayActivity.class);
-            intent.putExtra(ImageDisplayActivity.IMAGE, image);
-            v.getContext().startActivity(intent);
+            ImageDisplayActivity.showLocalImage(v.getContext(),image);
         }
     }
 }
