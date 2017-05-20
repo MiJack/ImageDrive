@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".ui.AboutActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -113,6 +115,7 @@
                         android:layout_below="@id/view_card_about_2_line"
                         android:background="?android:selectableItemBackground"
                         android:clickable="true"
+                        android:onClick="supportMe"
                         android:orientation="horizontal">
 
                         <ImageView
@@ -136,7 +139,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/ll_card_about_2_shop"
-                        android:background="?android:selectableItemBackground"
+                     android:onClick="emailMe"   android:background="?android:selectableItemBackground"
                         android:clickable="true"
                         android:orientation="horizontal">
 
@@ -161,7 +164,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/ll_card_about_2_email"
-                        android:background="?android:selectableItemBackground"
+                 android:onClick="seeCode"       android:background="?android:selectableItemBackground"
                         android:clickable="true"
                         android:orientation="horizontal">
 

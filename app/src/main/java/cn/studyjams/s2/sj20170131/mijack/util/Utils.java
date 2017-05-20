@@ -1,6 +1,9 @@
 package cn.studyjams.s2.sj20170131.mijack.util;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -21,6 +24,7 @@ import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.Date;
+import java.util.List;
 
 import cn.studyjams.s2.sj20170131.mijack.ui.ImageDisplayActivity;
 
@@ -98,5 +102,12 @@ public class Utils {
 
     public static String formatTime(long time) {
         return DateFormat.getDateInstance().format(new Date(time));
+    }
+
+    public static boolean isIntentAvailable(Context context, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
+                PackageManager.MATCH_ALL);
+        return list.size() > 0;
     }
 }
