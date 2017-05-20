@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 import cn.studyjams.s2.sj20170131.mijack.R;
@@ -30,14 +31,16 @@ public class FirebaseStorageAdapter extends FirebaseRecyclerAdapter<FirebaseImag
     }
 
     @Override
-    protected void populateViewHolder(StorageHolder storageHolder, FirebaseImage firebaseImage, int i) {
-        storageHolder.loadImage(firebaseImage);
+    protected void populateViewHolder(StorageHolder storageHolder, FirebaseImage firebaseImage, int position) {
+        DatabaseReference reference = getRef(position);
+        storageHolder.loadImage(firebaseImage,reference);
     }
 
 
     public static class StorageHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private ImageView image;
         private FirebaseImage firebaseImage;
+        private DatabaseReference reference;
 
         public StorageHolder(View itemView) {
             super(itemView);
@@ -47,8 +50,9 @@ public class FirebaseStorageAdapter extends FirebaseRecyclerAdapter<FirebaseImag
 
         private static final String TAG = "StorageHolder";
 
-        public void loadImage(FirebaseImage firebaseImage) {
+        public void loadImage(FirebaseImage firebaseImage, DatabaseReference reference) {
             this.firebaseImage = firebaseImage;
+            this.reference = reference;
             String url = firebaseImage.getDownloadUrl();
             Log.d(TAG, "loadImage: url" + url);
             Glide.with(itemView.getContext()).load(url).into(image);
@@ -57,7 +61,7 @@ public class FirebaseStorageAdapter extends FirebaseRecyclerAdapter<FirebaseImag
         @Override
         public void onClick(View v) {
             if (v.getId()==R.id.image){
-                ImageDisplayActivity.showFirebaseImage(v.getContext(),firebaseImage);
+                ImageDisplayActivity.showFirebaseImage(v.getContext(),firebaseImage,reference.toString());
             }
         }
     }

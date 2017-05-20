@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.media.ExifInterface;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
 import cn.studyjams.s2.sj20170131.mijack.entity.Folder;
 import cn.studyjams.s2.sj20170131.mijack.entity.Image;
@@ -153,8 +151,8 @@ public class MediaManager {
         return null;
     }
 
-    public static void deleteFile(String path) {
+    public static boolean deleteFile(String path) {
         File file = new File(path);
-        file.delete();
+        return file.delete();
     }
 }

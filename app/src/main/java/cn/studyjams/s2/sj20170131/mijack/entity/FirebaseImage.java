@@ -11,8 +11,8 @@ import java.util.Map;
  * @author Mr.Yuan
  * @date 2017/5/14
  */
-public class FirebaseImage implements Parcelable{
-    private   String miniType;
+public class FirebaseImage implements Parcelable {
+    private String miniType;
     private long dateTaken;
     private String downloadUrl;
     private String fsUrl;
@@ -155,9 +155,9 @@ public class FirebaseImage implements Parcelable{
     }
 
     public Map<String, Object> toMap() {
-        uploadTime=System.currentTimeMillis();
+        uploadTime = System.currentTimeMillis();
         Map<String, Object> map = new HashMap<>();
-        map.put("uploadTime",this.uploadTime);
+        map.put("uploadTime", this.uploadTime);
         map.put("downloadUrl", this.downloadUrl);
         map.put("fsUrl", this.fsUrl);
         map.put("width", this.width);
@@ -167,6 +167,7 @@ public class FirebaseImage implements Parcelable{
         map.put("device", this.device);
         map.put("deviceId", this.deviceId);
         map.put("miniType", this.miniType);
+        map.put("dateTaken", this.dateTaken);
         return map;
     }
 

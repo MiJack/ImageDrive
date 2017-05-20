@@ -6,32 +6,27 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.media.ExifInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnPausedListener;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -44,9 +39,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.studyjams.s2.sj20170131.mijack.R;
-import cn.studyjams.s2.sj20170131.mijack.adapter.ExitAttributeAdapter;
+import cn.studyjams.s2.sj20170131.mijack.adapter.AttributeAdapter;
 import cn.studyjams.s2.sj20170131.mijack.base.BaseActivity;
 import cn.studyjams.s2.sj20170131.mijack.core.MediaManager;
+import cn.studyjams.s2.sj20170131.mijack.entity.Attribute;
 import cn.studyjams.s2.sj20170131.mijack.entity.FirebaseImage;
 import cn.studyjams.s2.sj20170131.mijack.entity.Image;
 import cn.studyjams.s2.sj20170131.mijack.util.Utils;
@@ -55,14 +51,14 @@ import cn.studyjams.s2.sj20170131.mijack.util.Utils;
  * @author Mr.Yuan
  * @date 2017/4/26
  */
-public class ImageDisplayActivity extends BaseActivity implements OnProgressListener<UploadTask.TaskSnapshot>,
-        OnSuccessListener<UploadTask.TaskSnapshot>, OnFailureListener, OnPausedListener<UploadTask.TaskSnapshot> {
+public class ImageDisplayActivity extends BaseActivity {
     public static final String IMAGE = "image";
     private static final String TAG = "ImageDisplayActivity";
     public static final String DOWNLOAD_URL = "downloadUrl";
     public static final String TYPE = "type";
     public static final String LOCAL_FILE = "localFile";
     public static final String FIREBASE_STORAGE = "firebaseStorage";
+    private static final String DATABASE_REFERENCE_URL = "database_reference_url";
     private Image image;
     private ImageView imageView;
     private ImageView iconShare;
@@ -71,14 +67,15 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
     private ImageView iconInfo;
     private List<ImageView> icons = new ArrayList<>();
     private CoordinatorLayout coordinatorLayout;
-    private ExifInterface exifInterface;
     private MaterialDialog dialog;
     private StorageTask<UploadTask.TaskSnapshot> storageTask;
     private String cloudFileName;
     private String type;
     private FirebaseImage firebaseImage;
     private ImageView iconDownload;
-
+    private FirebaseStorage firebaseStorage;
+    private MaterialDialog downloadDialog;
+    private DatabaseReference databaseReference;
 
     public static void showLocalImage(Context context, Image image) {
         Intent intent = new Intent(context, ImageDisplayActivity.class)
@@ -87,9 +84,10 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
         context.startActivity(intent);
     }
 
-    public static void showFirebaseImage(Context context, FirebaseImage firebaseImage) {
+    public static void showFirebaseImage(Context context, FirebaseImage firebaseImage, String databaseReference) {
         Intent intent = new Intent(context, ImageDisplayActivity.class)
                 .putExtra(DOWNLOAD_URL, firebaseImage)
+                .putExtra(DATABASE_REFERENCE_URL, databaseReference)
                 .putExtra(TYPE, FIREBASE_STORAGE);
         context.startActivity(intent);
     }
@@ -99,6 +97,7 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_display);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        firebaseStorage = FirebaseStorage.getInstance();
         imageView = (ImageView) findViewById(R.id.imageView);
         iconShare = (ImageView) findViewById(R.id.iconShare);
         iconUpload = (ImageView) findViewById(R.id.iconUpload);
@@ -113,7 +112,6 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
         type = intent.getStringExtra(TYPE);
         if (LOCAL_FILE.equals(type) && intent.hasExtra(IMAGE)) {
             image = intent.getParcelableExtra(IMAGE);
-            exifInterface = MediaManager.getExifInterface(image.getPath());
             Log.d(TAG, "onCreate: image:" + image.getPath());
             Glide.with(imageView.getContext())
                     .load(image.getPath())
@@ -121,7 +119,9 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
                     .into(imageView);
         } else if (FIREBASE_STORAGE.equals(type) && intent.hasExtra(DOWNLOAD_URL)) {
             firebaseImage = intent.getParcelableExtra(DOWNLOAD_URL);
-            String url=firebaseImage.getDownloadUrl();
+            String databaseReferenceUrl = intent.getStringExtra(DATABASE_REFERENCE_URL);
+            databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(databaseReferenceUrl);
+            String url = firebaseImage.getDownloadUrl();
             Log.d(TAG, "onCreate: url:" + url);
             Glide.with(imageView.getContext())
                     .load(url)
@@ -150,9 +150,11 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
                 startActivity(Intent.createChooser(intent, "Share image using"));
                 break;
             case R.id.iconDownload:
+                File file = new File(firebaseImage.getLocalPath());
+                String content = file.exists() ? "该文件存在本地路径，是否覆盖下载？" : "将该文件到本地？";
                 new MaterialDialog.Builder(this)
                         .title("下载")
-                        .content("将该文件到本地？")
+                        .content(content)
                         .autoDismiss(false)
                         .positiveText("确定")
                         .onPositive((materialDialog, dialogAction) -> {
@@ -166,8 +168,7 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
             case R.id.iconDelete:
                 DialogInterface.OnClickListener dialogInterface = (DialogInterface dialog, int which) -> {
                     if (which == DialogInterface.BUTTON_POSITIVE) {
-//                        MediaManager.deleteFile(image.getPath());
-//                        finish();
+                        deleteFirebaseFile();
                     } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                         //nothing
                     }
@@ -180,8 +181,42 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
                         .create().show();
                 break;
             case R.id.iconInfo:
+                showFireBaseImageInfo();
                 break;
         }
+    }
+
+    private void deleteFirebaseFile() {
+        StorageReference reference = firebaseStorage.getReference().child(firebaseImage.getFsUrl());
+        reference.delete().addOnFailureListener(e -> Toast.makeText(ImageDisplayActivity.this, "删除失败", Toast.LENGTH_SHORT).show()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(ImageDisplayActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                databaseReference.removeValue();
+                finish();
+            }
+        });
+    }
+
+    private void showFireBaseImageInfo() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.layout_image_info, null);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        AttributeAdapter adapter = new AttributeAdapter();
+        List<Attribute<String>> list = new ArrayList<>();
+        list.add(new Attribute<String>("文件名称", firebaseImage.getName()));
+        list.add(new Attribute<String>("上传设备", firebaseImage.getDevice()));
+        list.add(new Attribute<String>("上传设备Id", firebaseImage.getDeviceId()));
+        list.add(new Attribute<String>("下载链接", firebaseImage.getDownloadUrl()));
+        list.add(new Attribute<String>("分辨率", firebaseImage.getWidth() + "*" + firebaseImage.getHeight()));
+        list.add(new Attribute<String>("原本地地址", firebaseImage.getLocalPath()));
+        list.add(new Attribute<String>("创建时间", Utils.formatTime(firebaseImage.getDateTaken())));
+        list.add(new Attribute<String>("上传时间", Utils.formatTime(firebaseImage.getUploadTime())));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter.setList(list);
+        recyclerView.setAdapter(adapter);
+        dialog.setContentView(view);
+        dialog.show();
     }
 
     private void showIcons(boolean show) {
@@ -239,8 +274,12 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
             case R.id.iconDelete:
                 DialogInterface.OnClickListener dialogInterface = (DialogInterface dialog, int which) -> {
                     if (which == DialogInterface.BUTTON_POSITIVE) {
-//                        MediaManager.deleteFile(image.getPath());
-//                        finish();
+                        if (MediaManager.deleteFile(image.getPath())) {
+                            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+                        }
                     } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                         //nothing
                     }
@@ -256,17 +295,16 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
                 BottomSheetDialog dialog = new BottomSheetDialog(this);
                 View view = LayoutInflater.from(this).inflate(R.layout.layout_image_info, null);
                 RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-                List<String> list = new ArrayList<>();
-                for (int i = 0; i < EXIF_INTERFACE_ATTRIBUTES.length; i++) {
-                    String attribute = EXIF_INTERFACE_ATTRIBUTES[i];
-                    String attributeValue = exifInterface.getAttribute(attribute);
-                    if (TextUtils.isEmpty(attributeValue)) {
-                        continue;
-                    }
-                    list.add(attribute + ":" + attributeValue);
-                }
+                AttributeAdapter adapter = new AttributeAdapter();
+                List<Attribute<String>> list = new ArrayList<>();
+                list.add(new Attribute<String>("文件名称", image.getName()));
+                list.add(new Attribute<String>("分辨率", image.getWidth() + "*" + image.getHeight()));
+                list.add(new Attribute<String>("本地地址", image.getPath()));
+                list.add(new Attribute<String>("大小", image.getSize() + "KB"));
+                list.add(new Attribute<String>("创建时间", Utils.formatTime(image.getDateTaken())));
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                recyclerView.setAdapter(new ExitAttributeAdapter(list));
+                adapter.setList(list);
+                recyclerView.setAdapter(adapter);
                 dialog.setContentView(view);
                 dialog.show();
                 break;
@@ -274,7 +312,26 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
     }
 
     private void downloadImage() {
-
+        String localPath = firebaseImage.getLocalPath();
+        StorageReference reference = firebaseStorage.getReference().child(firebaseImage.getFsUrl());
+        if (downloadDialog == null) {
+            downloadDialog = new MaterialDialog.Builder(this)
+                    .title("下载")
+                    .cancelable(false)
+                    .progress(false, 100, true)
+                    .build();
+        }
+        downloadDialog.show();
+        reference.getFile(new File(localPath))
+                .addOnProgressListener(taskSnapshot -> downloadDialog.setProgress((int) (taskSnapshot.getBytesTransferred() * 100 / taskSnapshot.getTotalByteCount())))
+                .addOnSuccessListener(taskSnapshot -> {
+                    downloadDialog.cancel();
+                    Snackbar.make(coordinatorLayout, "下载成功", Snackbar.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(exception -> {
+                    downloadDialog.cancel();
+                    Snackbar.make(coordinatorLayout, "下载失败", Snackbar.LENGTH_SHORT).show();
+                });
     }
 
     private void uploadImage(Image image) {
@@ -311,111 +368,44 @@ public class ImageDisplayActivity extends BaseActivity implements OnProgressList
         dialog.show();
         storageTask = reference.child(cloudFileName)
                 .putFile(Uri.fromFile(file))
-                .addOnProgressListener(this, this)
-                .addOnSuccessListener(this, this)
-                .addOnFailureListener(this, this)
-                .addOnPausedListener(this, this);
-    }
+                .addOnProgressListener(this,
+                        taskSnapshot -> {
+                            long totalByteCount = taskSnapshot.getTotalByteCount();
+                            long bytesTransferred = taskSnapshot.getBytesTransferred();
+                            dialog.setProgress((int) (100 * bytesTransferred / totalByteCount));
+                        }
+                )
+                .addOnSuccessListener(this, taskSnapshot -> {
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Snackbar.make(coordinatorLayout, "上传成功", Snackbar.LENGTH_SHORT).show();
+                    String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                    Pattern pattern = Pattern.compile("^image/([^/]+)(?:/.*)$");
+                    StorageMetadata metadata = taskSnapshot.getMetadata();
+                    String fsUrl = metadata.getPath();
+                    Matcher matcher = pattern.matcher(metadata.getPath());
+                    if (matcher.matches()) {
+                        String uid = matcher.group(1);
+                        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                        DatabaseReference reference1 = firebaseDatabase.getReference("images").child("users").child(uid);
+                        FirebaseImage fsImage = new FirebaseImage(image, downloadUrl, fsUrl);
+                        DatabaseReference push = reference1.push();
+                        push.updateChildren(fsImage.toMap());
+                    }
 
-    public static final String[] EXIF_INTERFACE_ATTRIBUTES = new String[]{
-            ExifInterface.TAG_ARTIST,//artist
-            ExifInterface.TAG_COMPRESSION,//compression
-            ExifInterface.TAG_COPYRIGHT,//copy right
-            ExifInterface.TAG_DATETIME,//date time
-            ExifInterface.TAG_IMAGE_DESCRIPTION,//description
-            ExifInterface.TAG_X_RESOLUTION,//height
-            ExifInterface.TAG_Y_RESOLUTION,//width
-            ExifInterface.TAG_IMAGE_WIDTH,
-            ExifInterface.TAG_IMAGE_LENGTH,
-            ExifInterface.TAG_MAKE,//make
-            ExifInterface.TAG_MODEL,//model
-            ExifInterface.TAG_ORIENTATION,//
-            ExifInterface.TAG_EXIF_VERSION,//exif version
-            ExifInterface.TAG_WHITE_BALANCE,//white balance
-            ExifInterface.TAG_EXPOSURE_TIME,
-            ExifInterface.TAG_F_NUMBER,
-            ExifInterface.TAG_EXPOSURE_PROGRAM,
-            ExifInterface.TAG_ISO_SPEED_RATINGS,
-            ExifInterface.TAG_EXPOSURE_MODE,
-            ExifInterface.TAG_EXPOSURE_BIAS_VALUE,
-            ExifInterface.TAG_DNG_VERSION,
-            ExifInterface.TAG_FOCAL_LENGTH
-//            Image Description 图像描述、来源. 指生成图像的工具
-//　　Artist作者 有些相机可以输入使用者的名字
-//　　Make 生产者 指产品生产厂家
-//　　Model 型号 指设备型号
-//　　Orientation方向 有的相机支持，有的不支持
-//　　XResolution/YResolution X/Y方向分辨率 本栏目已有专门条目解释此问题。
-//　　ResolutionUnit分辨率单位 一般为PPI
-//　　Software软件 显示固件Firmware版本
-//　　DateTime日期和时间
-//　　YCbCrPositioning 色相定位
-//　　ExifOffsetExif信息位置，定义Exif在信息在文件中的写入，有些软件不显示。
-//　　ExposureTime 曝光时间 即快门速度
-//　　FNumber光圈系数
-//　　ExposureProgram曝光程序 指程序式自动曝光的设置，各相机不同,可能是Sutter Priority（快门优先）、Aperture Priority（快门优先）等等。
-//　　ISO speed ratings感光度
-//　　ExifVersionExif版本
-//　　DateTimeOriginal创建时间
-//　　DateTimeDigitized数字化时间
-//　　ComponentsConfiguration图像构造（多指色彩组合方案）
-//　　CompressedBitsPerPixel(BPP)压缩时每像素色彩位 指压缩程度
-//　　ExposureBiasValue曝光补偿。
-//　　MaxApertureValue最大光圈
-//　　MeteringMode测光方式， 平均式测光、中央重点测光、点测光等。
-//　　Lightsource光源 指白平衡设置
-//　　Flash是否使用闪光灯。
-//　　FocalLength焦距，一般显示镜头物理焦距，有些软件可以定义一个系数，从而显示相当于35mm相机的焦距 MakerNote(User Comment)作者标记、说明、记录
-//　　FlashPixVersionFlashPix版本 （个别机型支持）
-//　　ColorSpace色域、色彩空间
-//　　ExifImageWidth(Pixel X Dimension)图像宽度 指横向像素数
-//　　ExifImageLength(Pixel Y Dimension)图像高度 指纵向像素数
-//　　Interoperability IFD通用性扩展项定义指针 和TIFF文件相关，具体含义不详
-//　　FileSource源文件 Compression压缩比。
-    };
-
-    @Override
-    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-        long totalByteCount = taskSnapshot.getTotalByteCount();
-        long bytesTransferred = taskSnapshot.getBytesTransferred();
-        dialog.setProgress((int) (100 * bytesTransferred / totalByteCount));
-    }
-
-    @Override
-    public void onFailure(@NonNull Exception e) {
-        if (dialog != null) {
-            dialog.dismiss();
-        }
-        Snackbar.make(coordinatorLayout, "上传失败", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-        if (dialog != null) {
-            dialog.dismiss();
-        }
-        Snackbar.make(coordinatorLayout, "上传成功", Snackbar.LENGTH_SHORT).show();
-        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-        Pattern pattern = Pattern.compile("^image/([^/]+)(?:/.*)$");
-        StorageMetadata metadata = taskSnapshot.getMetadata();
-        String fsUrl = metadata.getPath();
-        Matcher matcher = pattern.matcher(metadata.getPath());
-        if (matcher.matches()) {
-            String uid = matcher.group(1);
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            DatabaseReference reference = firebaseDatabase.getReference("images").child("users").child(uid);
-            FirebaseImage fsImage = new FirebaseImage(image, downloadUrl, fsUrl);
-            DatabaseReference push = reference.push();
-            push.updateChildren(fsImage.toMap());
-        }
-
-    }
-
-    @Override
-    public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
-        if (dialog != null) {
-            dialog.dismiss();
-        }
+                })
+                .addOnFailureListener(this, e -> {
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Snackbar.make(coordinatorLayout, "上传失败", Snackbar.LENGTH_SHORT).show();
+                })
+                .addOnPausedListener(this, taskSnapshot -> {
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                });
     }
 
 }
