@@ -6,21 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.studyjams.s2.sj20170131.mijack.R;
-import cn.studyjams.s2.sj20170131.mijack.util.Utils;
+import cn.studyjams.s2.sj20170131.mijack.entity.Attribute;
 
 /**
  * @author Mr.Yuan
- * @date 2017/4/29
+ * @date 2017/5/21
  */
-public class ExitAttributeAdapter extends RecyclerView.Adapter {
-    private List<String> list;
-
-    public ExitAttributeAdapter(List<String> list) {
-        this.list = list;
-    }
+public class AttributeAdapter<V> extends RecyclerView.Adapter {
+    List<Attribute<V>> list = new ArrayList<>();
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -31,14 +28,19 @@ public class ExitAttributeAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        String data = list.get(position);
-        String[] split = data.split(":");
-        ((TextView) holder.itemView.findViewById(R.id.attribute)).setText(split[0]);
-        ((TextView) holder.itemView.findViewById(R.id.attributeValue)).setText(split[1]);
+        Attribute data = list.get(position);
+        ((TextView) holder.itemView.findViewById(R.id.attribute)).setText(data.getName());
+        ((TextView) holder.itemView.findViewById(R.id.attributeValue)).setText(data.getValue()!=null?data.getValue().toString():"");
     }
 
     @Override
     public int getItemCount() {
-        return Utils.size(list);
+        return list.size();
+    }
+
+    public void setList(List<Attribute<V>> list) {
+        this.list.clear();
+        this.list.addAll(list);
+        this.notifyDataSetChanged();
     }
 }

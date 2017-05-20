@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.media.ExifInterface;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
 import cn.studyjams.s2.sj20170131.mijack.entity.Folder;
 import cn.studyjams.s2.sj20170131.mijack.entity.Image;
@@ -51,9 +49,6 @@ public class MediaManager {
                 int count = folderCursor.getInt(1);
                 int parentId = folderCursor.getInt(2);
                 List<Image> images = getImagesFromFolder(context, file.getParent(), limit);
-                Log.d(TAG, "getImageFoldersFromMedia: size:" + Utils.size(images));
-                Log.d(TAG, "getImageFoldersFromMedia: count:" + count);
-                Log.d(TAG, "getImageFoldersFromMedia: parent:" + parentId);
                 Folder imageMediaFolder = new Folder(file.getParent());
                 imageMediaFolder.setData(images);
                 imageMediaFolder.setCount(count);
@@ -86,7 +81,6 @@ public class MediaManager {
                 MediaStore.Images.Media.ORIENTATION
         }, select, null, null);
         if (c != null && c.moveToFirst()) {
-            Log.d(TAG, "getImagesFromFolder: cursor count:" + c.getCount());
             do {
                 System.out.println(
                         c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA)));
@@ -132,7 +126,6 @@ public class MediaManager {
                 MediaStore.Images.Media.ORIENTATION
         }, select, null, null);
         if (c != null && c.moveToFirst()) {
-            Log.d(TAG, "getImages: cursor count:" + c.getCount());
             do {
                 System.out.println(
                         c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA)));
@@ -158,8 +151,8 @@ public class MediaManager {
         return null;
     }
 
-    public static void deleteFile(String path) {
+    public static boolean deleteFile(String path) {
         File file = new File(path);
-        file.delete();
+        return file.delete();
     }
 }

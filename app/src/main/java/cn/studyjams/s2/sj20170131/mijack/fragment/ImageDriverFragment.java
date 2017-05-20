@@ -1,37 +1,38 @@
 package cn.studyjams.s2.sj20170131.mijack.fragment;
 
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import cn.studyjams.s2.sj20170131.mijack.R;
 import cn.studyjams.s2.sj20170131.mijack.adapter.FirebaseStorageAdapter;
 import cn.studyjams.s2.sj20170131.mijack.base.BaseFragment;
-import cn.studyjams.s2.sj20170131.mijack.database.DataBaseContentProvider;
-import cn.studyjams.s2.sj20170131.mijack.database.DatabaseSQLiteOpenHelper;
 
 /**
  * @author Mr.Yuan
  * @date 2017/4/28
  */
 public class ImageDriverFragment extends BaseFragment
-        implements SwipeRefreshLayout.OnRefreshListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int LOADER_ID = 1;
+        implements SwipeRefreshLayout.OnRefreshListener, ValueEventListener {
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayoutManager linearLayoutManager;
     FirebaseStorageAdapter storageImageAdapter;
+    private static final String TAG = "ImageDriverFragment";
 
     @Nullable
     @Override
@@ -45,38 +46,41 @@ public class ImageDriverFragment extends BaseFragment
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        storageImageAdapter = new FirebaseStorageAdapter(getActivity(), null, true);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            loadData(currentUser);
+        }
+    }
+
+    private void loadData(FirebaseUser currentUser) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("images").child("users").child(currentUser.getUid());
+        Log.d(TAG, "loadData: "+reference.toString());
+        Query query = reference.orderByKey();
+        query.keepSynced(true);
+        query.addValueEventListener(this);
+        storageImageAdapter = new FirebaseStorageAdapter(query);
         recyclerView.setAdapter(storageImageAdapter);
-        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     public void onRefresh() {
-
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(),
-                Uri.parse("content://" + DataBaseContentProvider.AUTHORITIES + "/" + DatabaseSQLiteOpenHelper.TABLE_NAME),
-                null, null, null, null);
-
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (storageImageAdapter == null) {
-            storageImageAdapter = new FirebaseStorageAdapter(getActivity(), data, true);
-            recyclerView.setAdapter(storageImageAdapter);
-//            mShowList.setAdapter(mShowsAdapter);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            loadData(currentUser);
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
         }
-        storageImageAdapter.swapCursor(data);
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        storageImageAdapter.swapCursor(null);
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

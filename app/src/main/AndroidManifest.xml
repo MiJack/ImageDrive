@@ -55,11 +55,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.UploadImageDialog" android:label="upload"
             android:theme="@style/AppTheme.Dialog"/>
-        <provider
-            android:name=".database.DataBaseContentProvider"
-            android:authorities="cn.studyjams.s2.sj20170131.mijack.DataProvider"
-            android:enabled="true"
-            android:exported="true" />
     </application>
 
 </manifest>
