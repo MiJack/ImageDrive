@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
 import cn.studyjams.s2.sj20170131.mijack.R;
 import cn.studyjams.s2.sj20170131.mijack.base.BaseActivity;
 import cn.studyjams.s2.sj20170131.mijack.util.TextHelper;
@@ -28,6 +29,8 @@ public class AccountActivity extends BaseActivity implements View.OnClickListene
     private static final String TAG = "AccountActivity";
     private static final int LOGIN = 1;
     private static final int CREATE = 2;
+    public static final int RESULT_LOGIN = 1;
+    public static final int RESULT_NEW_ACCOUNT = 2;
     TextView otherChoice;
     Button nextAction;
     Toolbar toolbar;
@@ -137,8 +140,9 @@ public class AccountActivity extends BaseActivity implements View.OnClickListene
         }
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(result -> {
-                    //todo 检查proile
                     log("success:" + result.toString());
+                    setResult(RESULT_NEW_ACCOUNT);
+                    finish();
 
                 })
                 .addOnFailureListener(result -> {

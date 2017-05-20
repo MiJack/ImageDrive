@@ -3,7 +3,6 @@ package cn.studyjams.s2.sj20170131.mijack.ui;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -32,6 +31,8 @@ import cn.studyjams.s2.sj20170131.mijack.fragment.ImageListFragment;
  */
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final int REQUEST_CODE_LOGIN = 1;
+    private static final int REQUEST_CODE_SET_PROFILE = 2;
+
     private static final int IMAGE_LIST_FRAGMENT = 1;
     private static final int IMAGE_DRIVER_FRAGMENT = 2;
     private static final int BACKUP_FRAGMENT = 3;
@@ -116,7 +117,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_CODE_LOGIN:
-                headerView.loadLoginInfo();
+                if (resultCode == RESULT_CANCELED) {
+                    return;
+                }
+                if (resultCode == AccountActivity.RESULT_LOGIN) {
+                    headerView.loadLoginInfo();
+                    return;
+                }
+                if (requestCode == AccountActivity.RESULT_NEW_ACCOUNT) {
+                    Intent intent = new Intent(this, SetupProfileActivity.class);
+                    startActivityForResult(intent, REQUEST_CODE_SET_PROFILE);
+                }
+                break;
+            case REQUEST_CODE_SET_PROFILE:
+                if (resultCode != RESULT_CANCELED) {
+                    headerView.loadLoginInfo();
+                }
                 break;
         }
     }

@@ -29,6 +29,10 @@
             android:label="MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ui.SetupProfileActivity"
+            android:label="MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".ui.AccountActivity"
             android:label="@string/title_activity_account"
             android:theme="@style/AppTheme.NoActionBar"
