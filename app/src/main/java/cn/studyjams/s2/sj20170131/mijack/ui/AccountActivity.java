@@ -2,11 +2,13 @@ package cn.studyjams.s2.sj20170131.mijack.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,9 +18,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.AuthResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
 import cn.studyjams.s2.sj20170131.mijack.R;
 import cn.studyjams.s2.sj20170131.mijack.base.BaseActivity;
 import cn.studyjams.s2.sj20170131.mijack.util.TextHelper;
@@ -28,6 +39,8 @@ public class AccountActivity extends BaseActivity implements View.OnClickListene
     private static final String TAG = "AccountActivity";
     private static final int LOGIN = 1;
     private static final int CREATE = 2;
+    public static final int RESULT_LOGIN = 1;
+    public static final int RESULT_NEW_ACCOUNT = 2;
     TextView otherChoice;
     Button nextAction;
     Toolbar toolbar;
@@ -45,15 +58,7 @@ public class AccountActivity extends BaseActivity implements View.OnClickListene
     int status = STATUS_1;
 
     private static final int STATUS_1 = 1;
-    private static final int STATUS_2 = 2;
-    private static final int STATUS_3 = 3;
-    private static final int STATUS_4 = 4;
-    private static final int STATUS_CREATE_ACCOUNT = 5;
-    private static final int STATUS_6 = 6;
-    private static final int STATUS_7 = 7;
-    private static final int STATUS_8 = 8;
-    private static final int STATUS_9 = 9;
-    private Button button;
+    private CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +77,7 @@ public class AccountActivity extends BaseActivity implements View.OnClickListene
         };
         setContentView(R.layout.activity_login);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.content);
         otherChoice = (TextView) findViewById(R.id.otherChoice);
         nextAction = (Button) findViewById(R.id.nextAction);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -87,21 +93,31 @@ public class AccountActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_account, menu);
-        MenuItem item = menu.findItem(R.id.actionResetPassword);
-        item.setVisible(status == LOGIN);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.nextAction:
+                String email = TextHelper.getText(emailLayout);
+                if (TextUtils.isEmpty(email)) {
+                    emailLayout.setError("邮箱为空");
+                    return;
+                }
+                if (!TextHelper.isEmail(email)) {
+                    emailLayout.setError("邮箱格式错误");
+                    return;
+                }
+                String password = TextHelper.getText(passwordLayout);
+                if (TextUtils.isEmpty(password)) {
+                    passwordLayout.setError("密码为空");
+                    return;
+                }
+                if (password.length() < 6) {
+                    passwordLayout.setError("密码长度不小于6");
+                    return;
+                }
                 if (status == LOGIN) {
-                    login();
+                    login(email, password);
                 } else if (status == CREATE) {
-                    create();
+                    create(email, password);
                 }
                 break;
             case R.id.otherChoice:
@@ -110,39 +126,39 @@ public class AccountActivity extends BaseActivity implements View.OnClickListene
                     status = CREATE;
                     nextAction.setText("创建账号");
                     otherChoice.setText("登录");
+                    info.setText(R.string.signin_with_your_email);
                 } else if (status == CREATE) {
                     status = LOGIN;
                     otherChoice.setText("创建账号");
                     nextAction.setText("登录");
+                    info.setText(R.string.login_with_your_account);
                     emailLayout.requestFocus();
                 }
                 break;
         }
     }
 
-    private void create() {
-        String email = TextHelper.getText(emailLayout);
-        if (TextUtils.isEmpty(email)) {
-            emailLayout.setError("请输入Email");
-            return;
-        }
-        if (!TextHelper.isEmail(email)) {
-            emailLayout.setError("Email 格式不正确");
-            return;
-        }
-        String password = TextHelper.getText(passwordLayout);
-        if (TextUtils.isEmpty(password)) {
-            passwordLayout.setError("请输入Password");
-            return;
-        }
+    private void create(String email, String password) {
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(result -> {
-                    //todo 检查proile
                     log("success:" + result.toString());
+                    setResult(RESULT_NEW_ACCOUNT);
+                    FirebaseUser user = result.getUser();
+                    user.updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(user.getEmail()).build())
+                            .addOnSuccessListener(aVoid -> Toast.makeText(AccountActivity.this, "设置默认的用户名为邮箱，请前往Profile修改", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(AccountActivity.this, "请前往Profile设置你的用户名", Toast.LENGTH_SHORT).show())
+                            .addOnCompleteListener(task -> finish());
 
                 })
                 .addOnFailureListener(result -> {
                     log("failure:" + result.toString());
+                    if (result instanceof FirebaseAuthWeakPasswordException) {
+                        Snackbar.make(coordinatorLayout, "密码不够强，注册失败", Snackbar.LENGTH_SHORT).show();
+                    } else if (result instanceof FirebaseAuthInvalidCredentialsException) {
+                        Snackbar.make(coordinatorLayout, "邮件格式不对，注册失败", Snackbar.LENGTH_SHORT).show();
+                    } else if (result instanceof FirebaseAuthUserCollisionException) {
+                        Snackbar.make(coordinatorLayout, "该邮箱已注册，注册失败", Snackbar.LENGTH_SHORT).show();
+                    }
                 })
                 .addOnCompleteListener(result -> {
                     log("complete:" + result.toString());
@@ -154,33 +170,21 @@ public class AccountActivity extends BaseActivity implements View.OnClickListene
         Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
     }
 
-    private void login() {
-        String email = TextHelper.getText(emailLayout);
-        if (TextUtils.isEmpty(email)) {
-            emailLayout.setError("请输入Email");
-            return;
-        }
-        if (!TextHelper.isEmail(email)) {
-            emailLayout.setError("Email 格式不正确");
-            return;
-        }
-        String password = TextHelper.getText(passwordLayout);
-        if (TextUtils.isEmpty(password)) {
-            passwordLayout.setError("请输入Password");
-            return;
-        }
+    private void login(String email, String password) {
         log("login");
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(result -> {
                     log("success:" + result.toString());
-                })
-                .addOnFailureListener(result -> {
-                    log("failure:" + result.toString());
-                })
-                .addOnCompleteListener(result -> {
-                    log("complete:" + result.toString());
                     setResult(RESULT_OK);
                     finish();
+                })
+                .addOnFailureListener(result -> {
+                    log("failure:" + result);
+                    if (result instanceof FirebaseAuthInvalidUserException) {
+                        Snackbar.make(coordinatorLayout, "用户不存在，注册失败", Snackbar.LENGTH_SHORT).show();
+                    } else if (result instanceof FirebaseAuthInvalidCredentialsException) {
+                        Snackbar.make(coordinatorLayout, "密码错误，注册失败", Snackbar.LENGTH_SHORT).show();
+                    }
                 });
     }
 
