@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/content"
     android:fitsSystemWindows="true"
     tools:context="cn.studyjams.s2.sj20170131.mijack.ui.AccountActivity">
 

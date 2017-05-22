@@ -27,13 +27,13 @@ import cn.studyjams.s2.sj20170131.mijack.util.Utils;
  */
 public class NavigationHeaderView implements View.OnClickListener, FirebaseAuth.AuthStateListener {
     ImageView profileView;
-    Activity activity;
+    MainActivity activity;
     FirebaseAuth firebaseAuth;
     private NavigationView navigationView;
     TextView nickName;
     TextView email;
 
-    public NavigationHeaderView(Activity activity, NavigationView navigationView) {
+    public NavigationHeaderView(MainActivity activity, NavigationView navigationView) {
         this.navigationView = navigationView;
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.addAuthStateListener(this);
@@ -77,8 +77,7 @@ public class NavigationHeaderView implements View.OnClickListener, FirebaseAuth.
                     Intent intent = new Intent(activity, AccountActivity.class);
                     activity.startActivityForResult(intent, MainActivity.REQUEST_CODE_LOGIN);
                 } else {
-                    Intent intent = new Intent(activity, ProfileActivity.class);
-                    activity.startActivity(intent);
+                    activity.startProfileActivity();
                 }
                 break;
         }

@@ -1,37 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/actionLocal"
-            android:icon="@drawable/ic_storage"
-            android:title="Local" />
-        <item
-            android:id="@+id/actionDriver"
-            android:icon="@drawable/ic_cloud"
-            android:title="Driver" />
-        <item
-            android:id="@+id/actionBackUp"
-            android:icon="@drawable/ic_backup"
-            android:title="BackUp"
-            android:visible="false" />
-        <item
-            android:id="@+id/actionProfile"
-            android:icon="@drawable/ic_settings"
-            android:title="Profile" />
-    </group>
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/actionSettings"
-            android:icon="@drawable/ic_settings"
-            android:title="Settings"
-            android:visible="false" />
-        <item
-            android:id="@+id/actionLogout"
-            android:icon="@drawable/ic_logout"
-            android:title="Logout" />
-        <item
-            android:id="@+id/actionAbout"
-            android:icon="@drawable/ic_about"
-            android:title="About" />
-    </group>
+    <item android:title="Files">
+        <menu>
+            <group
+                android:id="@+id/actionAccount"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/actionLocal"
+                    android:icon="@drawable/ic_storage"
+                    android:title="Local" />
+                <item
+                    android:id="@+id/actionDriver"
+                    android:icon="@drawable/ic_cloud"
+                    android:title="Driver" />
+                <item
+                    android:id="@+id/actionBackUp"
+                    android:icon="@drawable/ic_backup"
+                    android:title="BackUp"
+                    android:visible="false" />
+                <item
+                    android:id="@+id/actionProfile"
+                    android:icon="@drawable/ic_settings"
+                    android:title="Profile" />
+            </group>
+        </menu>
+    </item>
+    <item android:title="Application">
+        <menu>
+            <group
+                android:id="@+id/actionApplication"
+                android:checkableBehavior="none">
+                <item
+                    android:id="@+id/actionSettings"
+                    android:icon="@drawable/ic_settings"
+                    android:title="Settings"
+                    android:visible="false" />
+                <item
+                    android:id="@+id/actionLogout"
+                    android:icon="@drawable/ic_logout"
+                    android:title="Logout" />
+                <item
+                    android:id="@+id/actionAbout"
+                    android:icon="@drawable/ic_about"
+                    android:title="About" />
+            </group>
+        </menu>
+    </item>
 </menu>

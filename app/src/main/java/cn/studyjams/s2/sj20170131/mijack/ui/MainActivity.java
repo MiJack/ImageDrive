@@ -31,7 +31,7 @@ import cn.studyjams.s2.sj20170131.mijack.fragment.ImageListFragment;
  */
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final int REQUEST_CODE_LOGIN = 1;
-    private static final int REQUEST_CODE_SET_PROFILE = 2;
+    public static final int REQUEST_CODE_PROFILE = 2;
 
     private static final int IMAGE_LIST_FRAGMENT = 1;
     private static final int IMAGE_DRIVER_FRAGMENT = 2;
@@ -124,12 +124,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     headerView.loadLoginInfo();
                     return;
                 }
-                if (requestCode == AccountActivity.RESULT_NEW_ACCOUNT) {
-                    Intent intent = new Intent(this, SetupProfileActivity.class);
-                    startActivityForResult(intent, REQUEST_CODE_SET_PROFILE);
+                if (resultCode == AccountActivity.RESULT_NEW_ACCOUNT) {
+                    headerView.loadLoginInfo();
                 }
                 break;
-            case REQUEST_CODE_SET_PROFILE:
+            case REQUEST_CODE_PROFILE:
                 if (resultCode != RESULT_CANCELED) {
                     headerView.loadLoginInfo();
                 }
@@ -155,8 +154,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         switch (item.getItemId()) {
             case R.id.actionProfile:
                 drawerLayout.closeDrawer(Gravity.LEFT);
-                Intent intent = new Intent(this, ProfileActivity.class);
-                startActivity(intent);
+                startProfileActivity();
                 return true;
             case R.id.actionDriver:
                 drawerLayout.closeDrawer(Gravity.LEFT);
@@ -175,9 +173,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 startActivity(new Intent(this, AboutActivity.class));
                 return true;
             case R.id.actionSettings:
+                drawerLayout.closeDrawer(Gravity.LEFT);
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.actionLogout:
+                drawerLayout.closeDrawer(Gravity.LEFT);
                 if (dialog == null) {
                     DialogInterface.OnClickListener listener =
                             (DialogInterface dialog, int which) -> {
@@ -199,5 +199,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 return true;
         }
         return false;
+    }
+
+    public void startProfileActivity() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_PROFILE);
     }
 }
