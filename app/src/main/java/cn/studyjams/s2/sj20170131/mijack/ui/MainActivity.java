@@ -74,6 +74,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
         switch (fragmentCode) {
             case IMAGE_LIST_FRAGMENT:
+                setTitle("Local");
                 if (imageListFragment == null) {
                     imageListFragment = new ImageListFragment();
                     transaction.add(R.id.frameLayout, imageListFragment);
@@ -83,6 +84,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 currentFragment = imageListFragment;
                 break;
             case IMAGE_DRIVER_FRAGMENT:
+                setTitle("Driver");
                 if (imageDriverFragment == null) {
                     imageDriverFragment = new ImageDriverFragment();
                     transaction.add(R.id.frameLayout, imageDriverFragment);
@@ -152,7 +154,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         switch (item.getItemId()) {
             case R.id.actionProfile:
                 drawerLayout.closeDrawer(Gravity.LEFT);
-                startProfileActivity();
+                headerView.startProfileActivity();
+
                 return true;
             case R.id.actionDriver:
                 drawerLayout.closeDrawer(Gravity.LEFT);
@@ -197,10 +200,5 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 return true;
         }
         return false;
-    }
-
-    public void startProfileActivity() {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_PROFILE);
     }
 }
