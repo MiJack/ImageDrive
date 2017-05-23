@@ -129,9 +129,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
                 break;
             case REQUEST_CODE_PROFILE:
-                if (resultCode != RESULT_CANCELED) {
-                    headerView.loadLoginInfo();
-                }
+                headerView.loadLoginInfo();
                 break;
         }
     }
