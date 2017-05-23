@@ -2,109 +2,87 @@
     <string name="app_name">ImageDrive</string>
     <string name="permission_tip">请前往设置开启权限</string>
     <string name="copy_right"><![CDATA[Copy©Mi&Jack]]></string>
-    <string name="title_activity_scrolling">ScrollingActivity</string>
-    <string name="large_text">
-        "Material is the metaphor.\n\n"
-
-        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic.\n"
-        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
-        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
-        "flexibility of the material creates new affordances that supercede those in the physical "
-        "world, without breaking the rules of physics.\n"
-        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
-        "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts.\n\n"
-
-        "Bold, graphic, intentional.\n\n"
-
-        "The foundational elements of print based design typography, grids, space, scale, color, "
-        "and use of imagery guide visual treatments. These elements do far more than please the "
-        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
-        "imagery, large scale typography, and intentional white space create a bold and graphic "
-        "interface that immerse the user in the experience.\n"
-        "An emphasis on user actions makes core functionality immediately apparent and provides "
-        "waypoints for the user.\n\n"
-
-        "Motion provides meaning.\n\n"
-
-        "Motion respects and reinforces the user as the prime mover. Primary user actions are "
-        "inflection points that initiate motion, transforming the whole design.\n"
-        "All action takes place in a single environment. Objects are presented to the user without "
-        "breaking the continuity of experience even as they transform and reorganize.\n"
-        "Motion is meaningful and appropriate, serving to focus attention and maintain continuity. "
-        "Feedback is subtle yet clear. Transitions are efﬁcient yet coherent.\n\n"
-
-        "3D world.\n\n"
-
-        "The material environment is a 3D space, which means all objects have x, y, and z "
-        "dimensions. The z-axis is perpendicularly aligned to the plane of the display, with the "
-        "positive z-axis extending towards the viewer. Every sheet of material occupies a single "
-        "position along the z-axis and has a standard 1dp thickness.\n"
-        "On the web, the z-axis is used for layering and not for perspective. The 3D world is "
-        "emulated by manipulating the y-axis.\n\n"
-
-        "Light and shadow.\n\n"
-
-        "Within the material environment, virtual lights illuminate the scene. Key lights create "
-        "directional shadows, while ambient light creates soft shadows from all angles.\n"
-        "Shadows in the material environment are cast by these two light sources. In Android "
-        "development, shadows occur when light sources are blocked by sheets of material at "
-        "various positions along the z-axis. On the web, shadows are depicted by manipulating the "
-        "y-axis only. The following example shows the card with a height of 6dp.\n\n"
-
-        "Resting elevation.\n\n"
-
-        "All material objects, regardless of size, have a resting elevation, or default elevation "
-        "that does not change. If an object changes elevation, it should return to its resting "
-        "elevation as soon as possible.\n\n"
-
-        "Component elevations.\n\n"
-
-        "The resting elevation for a component type is consistent across apps (e.g., FAB elevation "
-        "does not vary from 6dp in one app to 16dp in another app).\n"
-        "Components may have different resting elevations across platforms, depending on the depth "
-        "of the environment (e.g., TV has a greater depth than mobile or desktop).\n\n"
-
-        "Responsive elevation and dynamic elevation offsets.\n\n"
-
-        "Some component types have responsive elevation, meaning they change elevation in response "
-        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
-        "changes are consistently implemented using dynamic elevation offsets.\n"
-        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
-        "to the component’s resting state. They ensure that elevation changes are consistent "
-        "across actions and component types. For example, all components that lift on press have "
-        "the same elevation change relative to their resting elevation.\n"
-        "Once the input event is completed or cancelled, the component will return to its resting "
-        "elevation.\n\n"
-
-        "Avoiding elevation interference.\n\n"
-
-        "Components with responsive elevations may encounter other components as they move between "
-        "their resting elevations and dynamic elevation offsets. Because material cannot pass "
-        "through other material, components avoid interfering with one another any number of ways, "
-        "whether on a per component basis or using the entire app layout.\n"
-        "On a component level, components can move or be removed before they cause interference. "
-        "For example, a floating action button (FAB) can disappear or move off screen before a "
-        "user picks up a card, or it can move if a snackbar appears.\n"
-        "On the layout level, design your app layout to minimize opportunities for interference. "
-        "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
-        "when a user tries to pick up one of cards.\n\n"
-    </string>
-    <string name="action_settings">Settings</string>
     <string name="content_drawer_open">content_drawer_open</string>
     <string name="content_drawer_close">content_drawer_close</string>
-    <string name="title_activity_account">Account</string>
-    <string name="title_activity_profile">ProfileActivity</string>
-    <string name="title_activity_image_folder">Folder</string>
-    <string name="title_activity_image_display">Image Display</string>
-    <string name="title_activity_about">About</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_account">登陆/注册</string>
+    <string name="title_activity_profile">个人设置</string>
+    <string name="profile">个人设置</string>
+    <string name="title_activity_image_folder">文件夹</string>
+    <string name="title_activity_image_display">图片展示</string>
+    <string name="title_activity_about">关于</string>
+    <string name="title_activity_settings">设置</string>
     <string name="about_email_intent">关于:ImageDrive</string>
     <string name="login_with_your_account">使用你的账号进行登录</string>
     <string name="signin_with_your_email">请使用你的email注册</string>
     <string name="show_folder">展示文件夹</string>
     <string name="show_all_images">展示所有图片</string>
     <string name="app_version">1.1</string>
+    <string name="email_not_found">找不到邮件程序</string>
+    <string name="file_exist_and_cover">该文件存在本地路径，是否覆盖下载？</string>
+    <string name="download_file_to_local">将该文件到本地？</string>
+    <string name="download">下载</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="are_you_sure_to_delete">你确定要删除吗？</string>
+    <string name="settings_failure">修改失败</string>
+    <string name="settings_success">修改成功</string>
+    <string name="setting_avatar">设置头像</string>
+    <string name="setting_avatar_success">设置头像成功！</string>
+    <string name="setting_avatar_failure">设置头像失败！</string>
+    <string name="upload_avatar_failure">上传头像失败！</string>
+    <string name="local">本地文件</string>
+    <string name="driver">云端文件</string>
+    <string name="sign_out">退出</string>
+    <string name="sign_out_message">你确定要退出吗？</string>
+    <string name="login">登录</string>
+    <string name="create_account">创建账号</string>
+    <string name="password_is_empty">密码为空</string>
+    <string name="password_too_short">密码长度不小于6</string>
+    <string name="email_is_empty">邮箱为空</string>
+    <string name="email_format_is_not_correct">邮箱格式错误</string>
+    <string name="set_user_name_please">设置默认的用户名为邮箱，请前往Profile修改</string>
+    <string name="set_user_name">请前往Profile设置你的用户名</string>
+    <string name="firebase_auth_weak_password">密码不够强，注册失败</string>
+    <string name="firebase_auth_invalid_email">邮件格式不对，注册失败</string>
+    <string name="firebase_auth_user_collision">该邮箱已注册，注册失败</string>
+    <string name="firebase_auth_invalid_user">用户不存在，注册失败</string>
+    <string name="firebase_auth_password_invalid">密码错误，注册失败</string>
+    <string name="upload_failure">上传失败</string>
+    <string name="upload_success">上传成功</string>
+    <string name="upload">上传</string>
+    <string name="login_please">请登录</string>
+    <string name="upload_after_login">请登录后再上传文件</string>
+    <string name="download_file_failure">下载失败</string>
+    <string name="download_file_success">下载成功</string>
+    <string name="file_name">文件名称</string>
+    <string name="local_path">本地地址</string>
+    <string name="file_size">大小</string>
+    <string name="create_time">创建时间</string>
+    <string name="resolution">分辨率</string>
+    <string name="local_path_before">原本地地址</string>
+    <string name="upload_file">同步该文件到云端？</string>
+    <string name="delete_failure">删除失败</string>
+    <string name="delete_seccess">删除成功</string>
+    <string name="upload_device">上传设备</string>
+    <string name="upload_device_id">上传设备Id</string>
+    <string name="download_link">下载链接</string>
+    <string name="upload_time">上传时间</string>
+    <string name="share_with">分享图片</string>
+    <string name="action_save">保存</string>
+    <string name="backup">BackUp</string>
+    <string name="files">文件</string>
+    <string name="application">应用</string>
+    <string name="settings">设置</string>
+    <string name="about">关于</string>
+    <string name="app_content">基于Firebase的图片同步软件</string>
+    <string name="contact_me">如果你喜欢这个应用，欢迎联系我！</string>
+    <string name="support_me">支持我！</string>
+    <string name="author_email">mijackstudio@gmail.com</string>
+    <string name="github">https://github.com/MiJack/ImageDrive</string>
+    <string name="setting_your_profile">设置你的个人信息</string>
+    <string name="setting_your_avatar">设置你的头像</string>
+    <string name="nick_name">昵称</string>
+    <string name="email">邮箱</string>
+    <string name="password">密码</string>
 </resources>

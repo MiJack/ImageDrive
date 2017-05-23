@@ -74,6 +74,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
         switch (fragmentCode) {
             case IMAGE_LIST_FRAGMENT:
+                setTitle(getString(R.string.local));
                 if (imageListFragment == null) {
                     imageListFragment = new ImageListFragment();
                     transaction.add(R.id.frameLayout, imageListFragment);
@@ -83,6 +84,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 currentFragment = imageListFragment;
                 break;
             case IMAGE_DRIVER_FRAGMENT:
+                setTitle(getString(R.string.driver));
                 if (imageDriverFragment == null) {
                     imageDriverFragment = new ImageDriverFragment();
                     transaction.add(R.id.frameLayout, imageDriverFragment);
@@ -120,18 +122,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (resultCode == RESULT_CANCELED) {
                     return;
                 }
-                if (resultCode == AccountActivity.RESULT_LOGIN) {
+                if (resultCode == LoginActivity.RESULT_LOGIN) {
                     headerView.loadLoginInfo();
                     return;
                 }
-                if (resultCode == AccountActivity.RESULT_NEW_ACCOUNT) {
+                if (resultCode == LoginActivity.RESULT_NEW_ACCOUNT) {
                     headerView.loadLoginInfo();
                 }
                 break;
             case REQUEST_CODE_PROFILE:
-                if (resultCode != RESULT_CANCELED) {
-                    headerView.loadLoginInfo();
-                }
+                headerView.loadLoginInfo();
                 break;
         }
     }
@@ -154,7 +154,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         switch (item.getItemId()) {
             case R.id.actionProfile:
                 drawerLayout.closeDrawer(Gravity.LEFT);
-                startProfileActivity();
+                headerView.startProfileActivity();
+
                 return true;
             case R.id.actionDriver:
                 drawerLayout.closeDrawer(Gravity.LEFT);
@@ -187,22 +188,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                                 }
                             };
                     dialog = new AlertDialog.Builder(this)
-                            .setTitle("Sign out")
+                            .setTitle(R.string.sign_out)
                             .setIcon(R.drawable.ic_logout)
                             .setCancelable(false)
-                            .setPositiveButton("确定", listener)
-                            .setNegativeButton("取消", listener)
-                            .setMessage("你确定要退出吗？")
+                            .setPositiveButton(R.string.ok, listener)
+                            .setNegativeButton(R.string.cancel, listener)
+                            .setMessage(R.string.sign_out_message)
                             .create();
                 }
                 dialog.show();
                 return true;
         }
         return false;
-    }
-
-    public void startProfileActivity() {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_PROFILE);
     }
 }

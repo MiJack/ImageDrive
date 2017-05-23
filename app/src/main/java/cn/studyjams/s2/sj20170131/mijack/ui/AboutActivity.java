@@ -61,7 +61,7 @@ public class AboutActivity extends BaseActivity {
         if (Utils.isIntentAvailable(this, intent)) {
             startActivity(intent);
         } else {
-            Toast.makeText(this, "找不到邮件程序", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.email_not_found, Toast.LENGTH_SHORT).show();
         }
     }
 

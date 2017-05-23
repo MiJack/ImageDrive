@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="cn.studyjams.s2.sj20170131.mijack.ui.AccountActivity"
+    tools:context="cn.studyjams.s2.sj20170131.mijack.ui.LoginActivity"
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="81dp"
     tools:showIn="@layout/activity_login">
@@ -40,7 +40,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
-    <cn.studyjams.s2.sj20170131.mijack.widget.IMEBlockLayout
+    <LinearLayout
         android:id="@+id/inputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
             android:id="@+id/emailLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="邮箱"
+            android:hint="@string/email"
             app:errorEnabled="true"
             app:passwordToggleDrawable="@drawable/visibility_selector"
             app:passwordToggleEnabled="false"
@@ -70,7 +70,7 @@
             android:id="@+id/passwordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="密码"
+            android:hint="@string/password"
             app:errorEnabled="true"
             app:passwordToggleDrawable="@drawable/visibility_selector"
             app:passwordToggleEnabled="true"
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
         </android.support.design.widget.TextInputLayout>
-    </cn.studyjams.s2.sj20170131.mijack.widget.IMEBlockLayout>
+    </LinearLayout>
 
     <Button
         android:id="@+id/otherChoice"
@@ -93,7 +93,7 @@
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
         android:paddingTop="4dp"
-        android:text="创建账户"
+        android:text="@string/create_account"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/inputLayout" />
 
@@ -107,7 +107,7 @@
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
         android:paddingTop="4dp"
-        android:text="登录"
+        android:text="@string/login"
         android:theme="@style/AppTheme.Button.Colored"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/inputLayout" />
