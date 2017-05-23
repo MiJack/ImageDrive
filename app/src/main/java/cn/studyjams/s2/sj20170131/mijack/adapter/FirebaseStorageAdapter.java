@@ -1,9 +1,12 @@
 package cn.studyjams.s2.sj20170131.mijack.adapter;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -61,7 +64,9 @@ public class FirebaseStorageAdapter extends FirebaseRecyclerAdapter<FirebaseImag
         @Override
         public void onClick(View v) {
             if (v.getId()==R.id.image){
-                ImageDisplayActivity.showFirebaseImage(v.getContext(),firebaseImage,reference.toString());
+                ActivityOptionsCompat activityOptions =ActivityOptionsCompat
+                        .makeSceneTransitionAnimation((Activity)v.getContext(),v,"image");
+                ImageDisplayActivity.showFirebaseImage(v.getContext(),firebaseImage,reference.toString(),activityOptions.toBundle());
             }
         }
     }

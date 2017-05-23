@@ -86,12 +86,12 @@ public class ImageDisplayActivity extends BaseActivity {
         ActivityCompat.startActivity(context,intent,bundle);
     }
 
-    public static void showFirebaseImage(Context context, FirebaseImage firebaseImage, String databaseReference) {
+    public static void showFirebaseImage(Context context, FirebaseImage firebaseImage, String databaseReference, Bundle bundle) {
         Intent intent = new Intent(context, ImageDisplayActivity.class)
                 .putExtra(DOWNLOAD_URL, firebaseImage)
                 .putExtra(DATABASE_REFERENCE_URL, databaseReference)
                 .putExtra(TYPE, FIREBASE_STORAGE);
-        context.startActivity(intent);
+        ActivityCompat.startActivity(context,intent,bundle);
     }
 
     @Override
@@ -127,7 +127,6 @@ public class ImageDisplayActivity extends BaseActivity {
             Log.d(TAG, "onCreate: url:" + url);
             Glide.with(imageView.getContext())
                     .load(url)
-//                    .placeholder(R.drawable.ic_picture_filled)
                     .into(imageView);
         } else {
             return;
