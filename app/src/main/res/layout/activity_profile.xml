@@ -31,7 +31,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="设置你的个人信息"
+            android:text="@string/setting_your_profile"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:text="设置你的头像"
+            android:text="@string/setting_your_avatar"
             app:layout_constraintBottom_toBottomOf="@+id/circleImageView"
             app:layout_constraintStart_toEndOf="@+id/circleImageView"
             app:layout_constraintTop_toTopOf="@+id/circleImageView" />
@@ -75,7 +75,7 @@
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nick Name" />
+                android:hint="@string/nick_name" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -92,7 +92,7 @@
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email" />
+                android:hint="@string/email" />
         </android.support.design.widget.TextInputLayout>
     </android.support.constraint.ConstraintLayout>
 

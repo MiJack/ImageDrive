@@ -85,20 +85,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             case R.id.nextAction:
                 String email = TextHelper.getText(emailLayout);
                 if (TextUtils.isEmpty(email)) {
-                    emailLayout.setError("邮箱为空");
+                    emailLayout.setError(getString(R.string.email_is_empty));
                     return;
                 }
                 if (!TextHelper.isEmail(email)) {
-                    emailLayout.setError("邮箱格式错误");
+                    emailLayout.setError(getString(R.string.email_format_is_not_correct));
                     return;
                 }
                 String password = TextHelper.getText(passwordLayout);
                 if (TextUtils.isEmpty(password)) {
-                    passwordLayout.setError("密码为空");
+                    passwordLayout.setError(getString(R.string.password_is_empty));
                     return;
                 }
                 if (password.length() < 6) {
-                    passwordLayout.setError("密码长度不小于6");
+                    passwordLayout.setError(getString(R.string.password_too_short));
                     return;
                 }
                 if (status == LOGIN) {
@@ -111,13 +111,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 invalidateOptionsMenu();
                 if (status == LOGIN) {
                     status = CREATE;
-                    nextAction.setText("创建账号");
-                    otherChoice.setText("登录");
+                    nextAction.setText(R.string.create_account);
+                    otherChoice.setText(R.string.login);
                     info.setText(R.string.signin_with_your_email);
                 } else if (status == CREATE) {
                     status = LOGIN;
-                    otherChoice.setText("创建账号");
-                    nextAction.setText("登录");
+                    otherChoice.setText(R.string.create_account);
+                    nextAction.setText(R.string.login);
                     info.setText(R.string.login_with_your_account);
                     emailLayout.requestFocus();
                 }
@@ -132,19 +132,19 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     setResult(RESULT_NEW_ACCOUNT);
                     FirebaseUser user = result.getUser();
                     user.updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(user.getEmail()).build())
-                            .addOnSuccessListener(aVoid -> Toast.makeText(LoginActivity.this, "设置默认的用户名为邮箱，请前往Profile修改", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "请前往Profile设置你的用户名", Toast.LENGTH_SHORT).show())
+                            .addOnSuccessListener(aVoid -> Toast.makeText(LoginActivity.this, R.string.set_user_name_please, Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(LoginActivity.this, R.string.set_user_name, Toast.LENGTH_SHORT).show())
                             .addOnCompleteListener(task -> finish());
 
                 })
                 .addOnFailureListener(result -> {
                     log("failure:" + result.toString());
                     if (result instanceof FirebaseAuthWeakPasswordException) {
-                        Snackbar.make(coordinatorLayout, "密码不够强，注册失败", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(coordinatorLayout, R.string.firebase_auth_weak_password, Snackbar.LENGTH_SHORT).show();
                     } else if (result instanceof FirebaseAuthInvalidCredentialsException) {
-                        Snackbar.make(coordinatorLayout, "邮件格式不对，注册失败", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(coordinatorLayout, R.string.firebase_auth_invalid_email, Snackbar.LENGTH_SHORT).show();
                     } else if (result instanceof FirebaseAuthUserCollisionException) {
-                        Snackbar.make(coordinatorLayout, "该邮箱已注册，注册失败", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(coordinatorLayout, R.string.firebase_auth_user_collision, Snackbar.LENGTH_SHORT).show();
                     }
                 })
                 .addOnCompleteListener(result -> {
@@ -168,9 +168,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 .addOnFailureListener(result -> {
                     log("failure:" + result);
                     if (result instanceof FirebaseAuthInvalidUserException) {
-                        Snackbar.make(coordinatorLayout, "用户不存在，注册失败", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(coordinatorLayout, R.string.firebase_auth_invalid_user, Snackbar.LENGTH_SHORT).show();
                     } else if (result instanceof FirebaseAuthInvalidCredentialsException) {
-                        Snackbar.make(coordinatorLayout, "密码错误，注册失败", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(coordinatorLayout, R.string.firebase_auth_password_invalid, Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }

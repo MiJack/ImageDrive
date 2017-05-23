@@ -95,8 +95,8 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
                         .setDisplayName(TextHelper.getText(editNickName))
                         .build();
                 firebaseAuth.getCurrentUser().updateProfile(request)
-                        .addOnFailureListener(this, result -> Snackbar.make(coordinatorLayout, "修改失败", Snackbar.LENGTH_SHORT).show())
-                        .addOnSuccessListener(this, result -> Snackbar.make(coordinatorLayout, "修改成功", Snackbar.LENGTH_SHORT).show())
+                        .addOnFailureListener(this, result -> Snackbar.make(coordinatorLayout, R.string.settings_failure, Snackbar.LENGTH_SHORT).show())
+                        .addOnSuccessListener(this, result -> Snackbar.make(coordinatorLayout, R.string.settings_success, Snackbar.LENGTH_SHORT).show())
                         .addOnCompleteListener(this, result -> editNickName.setEnabled(true));
                 break;
             case android.R.id.home:
@@ -119,7 +119,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
         if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
             //todo
             Uri imageUri = data.getData();
-            dialog = new MaterialDialog.Builder(this).title("设置头像")
+            dialog = new MaterialDialog.Builder(this).title(R.string.setting_avatar)
                     .progress(true, 100).build();
             dialog.show();
             FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -133,12 +133,12 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
                 UserProfileChangeRequest request = new UserProfileChangeRequest.Builder().setPhotoUri(downloadUrl)
                         .build();
                 firebaseAuth1.getCurrentUser().updateProfile(request).addOnSuccessListener(aVoid -> {
-                    Snackbar.make(coordinatorLayout, "设置头像成功！", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, R.string.setting_avatar_success, Toast.LENGTH_SHORT).show();
                     dialog.cancel();
                     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                     Glide.with(ProfileActivity.this).load(firebaseUser.getPhotoUrl()).into(circleImageView);
-                }).addOnFailureListener(e -> Snackbar.make(coordinatorLayout, "设置头像失败！", Toast.LENGTH_SHORT).show());
-            }).addOnFailureListener(e -> Snackbar.make(coordinatorLayout, "上传头像失败！", Toast.LENGTH_SHORT).show());
+                }).addOnFailureListener(e -> Snackbar.make(coordinatorLayout, R.string.setting_avatar_failure, Toast.LENGTH_SHORT).show());
+            }).addOnFailureListener(e -> Snackbar.make(coordinatorLayout, R.string.upload_avatar_failure, Toast.LENGTH_SHORT).show());
         }
     }
 

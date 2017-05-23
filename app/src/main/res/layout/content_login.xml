@@ -54,7 +54,7 @@
             android:id="@+id/emailLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="邮箱"
+            android:hint="@string/email"
             app:errorEnabled="true"
             app:passwordToggleDrawable="@drawable/visibility_selector"
             app:passwordToggleEnabled="false"
@@ -70,7 +70,7 @@
             android:id="@+id/passwordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="密码"
+            android:hint="@string/password"
             app:errorEnabled="true"
             app:passwordToggleDrawable="@drawable/visibility_selector"
             app:passwordToggleEnabled="true"
@@ -93,7 +93,7 @@
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
         android:paddingTop="4dp"
-        android:text="创建账户"
+        android:text="@string/create_account"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/inputLayout" />
 
@@ -107,7 +107,7 @@
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
         android:paddingTop="4dp"
-        android:text="登录"
+        android:text="@string/login"
         android:theme="@style/AppTheme.Button.Colored"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/inputLayout" />

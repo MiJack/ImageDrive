@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Files">
+    <item android:title="@string/files">
         <menu>
             <group
                 android:id="@+id/actionAccount"
@@ -8,24 +8,24 @@
                 <item
                     android:id="@+id/actionLocal"
                     android:icon="@drawable/ic_storage"
-                    android:title="Local" />
+                    android:title="@string/local" />
                 <item
                     android:id="@+id/actionDriver"
                     android:icon="@drawable/ic_cloud"
-                    android:title="Driver" />
+                    android:title="@string/driver" />
                 <item
                     android:id="@+id/actionBackUp"
                     android:icon="@drawable/ic_backup"
-                    android:title="BackUp"
+                    android:title="@string/backup"
                     android:visible="false" />
-                <item
-                    android:id="@+id/actionProfile"
-                    android:icon="@drawable/ic_settings"
-                    android:title="Profile" />
             </group>
+            <item
+                android:id="@+id/actionProfile"
+                android:icon="@drawable/ic_settings"
+                android:title="@string/profile" />
         </menu>
     </item>
-    <item android:title="Application">
+    <item android:title="@string/application">
         <menu>
             <group
                 android:id="@+id/actionApplication"
@@ -33,16 +33,16 @@
                 <item
                     android:id="@+id/actionSettings"
                     android:icon="@drawable/ic_settings"
-                    android:title="Settings"
+                    android:title="@string/settings"
                     android:visible="false" />
                 <item
                     android:id="@+id/actionLogout"
                     android:icon="@drawable/ic_logout"
-                    android:title="Logout" />
+                    android:title="@string/sign_out" />
                 <item
                     android:id="@+id/actionAbout"
                     android:icon="@drawable/ic_about"
-                    android:title="About" />
+                    android:title="@string/about" />
             </group>
         </menu>
     </item>

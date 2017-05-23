@@ -149,21 +149,21 @@ public class ImageDisplayActivity extends BaseActivity {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setData(Uri.parse(firebaseImage.getDownloadUrl()));
                 intent.setType(firebaseImage.getMiniType());
-                startActivity(Intent.createChooser(intent, "Share image using"));
+                startActivity(Intent.createChooser(intent, getString(R.string.share_with)));
                 break;
             case R.id.iconDownload:
                 File file = new File(firebaseImage.getLocalPath());
-                String content = file.exists() ? "该文件存在本地路径，是否覆盖下载？" : "将该文件到本地？";
+                String content = file.exists() ? getString(R.string.file_exist_and_cover) : getString(R.string.download_file_to_local);
                 new MaterialDialog.Builder(this)
-                        .title("下载")
+                        .title(R.string.download)
                         .content(content)
                         .autoDismiss(false)
-                        .positiveText("确定")
+                        .positiveText(R.string.ok)
                         .onPositive((materialDialog, dialogAction) -> {
                             materialDialog.dismiss();
                             downloadImage();
                         })
-                        .negativeText("取消")
+                        .negativeText(R.string.cancel)
                         .onNegative((materialDialog, dialogAction) -> materialDialog.dismiss())
                         .show();
                 break;
@@ -176,10 +176,10 @@ public class ImageDisplayActivity extends BaseActivity {
                     }
                 };
                 new AlertDialog.Builder(this)
-                        .setTitle("删除")
-                        .setMessage("你确定要删除吗？")
-                        .setPositiveButton("确定", dialogInterface)
-                        .setNegativeButton("取消", dialogInterface)
+                        .setTitle(R.string.delete)
+                        .setMessage(R.string.are_you_sure_to_delete)
+                        .setPositiveButton(R.string.ok, dialogInterface)
+                        .setNegativeButton(R.string.cancel, dialogInterface)
                         .create().show();
                 break;
             case R.id.iconInfo:
@@ -190,10 +190,10 @@ public class ImageDisplayActivity extends BaseActivity {
 
     private void deleteFirebaseFile() {
         StorageReference reference = firebaseStorage.getReference().child(firebaseImage.getFsUrl());
-        reference.delete().addOnFailureListener(e -> Toast.makeText(ImageDisplayActivity.this, "删除失败", Toast.LENGTH_SHORT).show()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        reference.delete().addOnFailureListener(e -> Toast.makeText(ImageDisplayActivity.this, R.string.delete_failure, Toast.LENGTH_SHORT).show()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(ImageDisplayActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ImageDisplayActivity.this, R.string.delete_seccess, Toast.LENGTH_SHORT).show();
                 databaseReference.removeValue();
                 finish();
             }
@@ -206,14 +206,14 @@ public class ImageDisplayActivity extends BaseActivity {
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         AttributeAdapter adapter = new AttributeAdapter();
         List<Attribute<String>> list = new ArrayList<>();
-        list.add(new Attribute<String>("文件名称", firebaseImage.getName()));
-        list.add(new Attribute<String>("上传设备", firebaseImage.getDevice()));
-        list.add(new Attribute<String>("上传设备Id", firebaseImage.getDeviceId()));
-        list.add(new Attribute<String>("下载链接", firebaseImage.getDownloadUrl()));
-        list.add(new Attribute<String>("分辨率", firebaseImage.getWidth() + "*" + firebaseImage.getHeight()));
-        list.add(new Attribute<String>("原本地地址", firebaseImage.getLocalPath()));
-        list.add(new Attribute<String>("创建时间", Utils.formatTime(firebaseImage.getDateTaken())));
-        list.add(new Attribute<String>("上传时间", Utils.formatTime(firebaseImage.getUploadTime())));
+        list.add(new Attribute<String>(getString(R.string.file_name), firebaseImage.getName()));
+        list.add(new Attribute<String>(getString(R.string.upload_device), firebaseImage.getDevice()));
+        list.add(new Attribute<String>(getString(R.string.upload_device_id), firebaseImage.getDeviceId()));
+        list.add(new Attribute<String>(getString(R.string.download_link), firebaseImage.getDownloadUrl()));
+        list.add(new Attribute<String>(getString(R.string.resolution), firebaseImage.getWidth() + "*" + firebaseImage.getHeight()));
+        list.add(new Attribute<String>(getString(R.string.local_path_before), firebaseImage.getLocalPath()));
+        list.add(new Attribute<String>(getString(R.string.create_time), Utils.formatTime(firebaseImage.getDateTaken())));
+        list.add(new Attribute<String>(getString(R.string.upload_time), Utils.formatTime(firebaseImage.getUploadTime())));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter.setList(list);
         recyclerView.setAdapter(adapter);
@@ -243,33 +243,33 @@ public class ImageDisplayActivity extends BaseActivity {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setData(Uri.parse(image.getPath()));
                 intent.setType(image.getMiniType());
-                startActivity(Intent.createChooser(intent, "Share image using"));
+                startActivity(Intent.createChooser(intent, getString(R.string.share_with)));
                 break;
             case R.id.iconDownload:
                 new MaterialDialog.Builder(this)
-                        .title("下载")
-                        .content("将该文件到本地？")
+                        .title(R.string.download)
+                        .content(R.string.download_file_to_local)
                         .autoDismiss(false)
-                        .positiveText("确定")
+                        .positiveText(R.string.ok)
                         .onPositive((materialDialog, dialogAction) -> {
                             materialDialog.dismiss();
                             downloadImage();
                         })
-                        .negativeText("取消")
+                        .negativeText(R.string.cancel)
                         .onNegative((materialDialog, dialogAction) -> materialDialog.dismiss())
                         .show();
                 break;
             case R.id.iconUpload:
                 new MaterialDialog.Builder(this)
-                        .title("同步")
-                        .content("同步该文件到云端？")
+                        .title(R.string.upload)
+                        .content(R.string.upload_file)
                         .autoDismiss(false)
-                        .positiveText("确定")
+                        .positiveText(R.string.ok)
                         .onPositive((materialDialog, dialogAction) -> {
                             uploadImage(image);
                             materialDialog.dismiss();
                         })
-                        .negativeText("取消")
+                        .negativeText(R.string.cancel)
                         .onNegative((materialDialog, dialogAction) -> materialDialog.dismiss())
                         .show();
                 break;
@@ -277,20 +277,20 @@ public class ImageDisplayActivity extends BaseActivity {
                 DialogInterface.OnClickListener dialogInterface = (DialogInterface dialog, int which) -> {
                     if (which == DialogInterface.BUTTON_POSITIVE) {
                         if (MediaManager.deleteFile(image.getPath())) {
-                            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.delete_seccess, Toast.LENGTH_SHORT).show();
                             finish();
                         } else {
-                            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.delete_failure, Toast.LENGTH_SHORT).show();
                         }
                     } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                         //nothing
                     }
                 };
                 new AlertDialog.Builder(this)
-                        .setTitle("删除")
-                        .setMessage("你确定要删除吗？")
-                        .setPositiveButton("确定", dialogInterface)
-                        .setNegativeButton("取消", dialogInterface)
+                        .setTitle(R.string.delete)
+                        .setMessage(R.string.are_you_sure_to_delete)
+                        .setPositiveButton(R.string.ok, dialogInterface)
+                        .setNegativeButton(R.string.cancel, dialogInterface)
                         .create().show();
                 break;
             case R.id.iconInfo:
@@ -299,11 +299,11 @@ public class ImageDisplayActivity extends BaseActivity {
                 RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
                 AttributeAdapter adapter = new AttributeAdapter();
                 List<Attribute<String>> list = new ArrayList<>();
-                list.add(new Attribute<String>("文件名称", image.getName()));
-                list.add(new Attribute<String>("分辨率", image.getWidth() + "*" + image.getHeight()));
-                list.add(new Attribute<String>("本地地址", image.getPath()));
-                list.add(new Attribute<String>("大小", image.getSize() + "KB"));
-                list.add(new Attribute<String>("创建时间", Utils.formatTime(image.getDateTaken())));
+                list.add(new Attribute(getString(R.string.file_name), image.getName()));
+                list.add(new Attribute(getString(R.string.resolution), image.getWidth() + "*" + image.getHeight()));
+                list.add(new Attribute(getString(R.string.local_path), image.getPath()));
+                list.add(new Attribute(getString(R.string.file_size), image.getSize() + "KB"));
+                list.add(new Attribute(getString(R.string.create_time), Utils.formatTime(image.getDateTaken())));
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 adapter.setList(list);
                 recyclerView.setAdapter(adapter);
@@ -318,7 +318,7 @@ public class ImageDisplayActivity extends BaseActivity {
         StorageReference reference = firebaseStorage.getReference().child(firebaseImage.getFsUrl());
         if (downloadDialog == null) {
             downloadDialog = new MaterialDialog.Builder(this)
-                    .title("下载")
+                    .title(R.string.download)
                     .cancelable(false)
                     .progress(false, 100, true)
                     .build();
@@ -328,11 +328,11 @@ public class ImageDisplayActivity extends BaseActivity {
                 .addOnProgressListener(taskSnapshot -> downloadDialog.setProgress((int) (taskSnapshot.getBytesTransferred() * 100 / taskSnapshot.getTotalByteCount())))
                 .addOnSuccessListener(taskSnapshot -> {
                     downloadDialog.cancel();
-                    Snackbar.make(coordinatorLayout, "下载成功", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, R.string.download_file_success, Snackbar.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(exception -> {
                     downloadDialog.cancel();
-                    Snackbar.make(coordinatorLayout, "下载失败", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, R.string.download_file_failure, Snackbar.LENGTH_SHORT).show();
                 });
     }
 
@@ -340,9 +340,9 @@ public class ImageDisplayActivity extends BaseActivity {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() == null) {
             new MaterialDialog.Builder(this)
-                    .title("请登录").content("请登录后再上传文件")
+                    .title(R.string.login_please).content(R.string.upload_after_login)
                     .cancelable(false)
-                    .negativeText("确定")
+                    .negativeText(R.string.ok)
                     .onNegative((materialDialog, dialogAction) -> {
                         materialDialog.dismiss();
                     }).build().show();
@@ -358,10 +358,10 @@ public class ImageDisplayActivity extends BaseActivity {
         StorageReference reference = firebaseStorage.getReference()
                 .child("image").child(firebaseAuth.getCurrentUser().getUid());
         dialog = new MaterialDialog.Builder(this)
-                .title("upload")
+                .title(R.string.upload)
                 .cancelable(false)
                 .progress(false, 100, true)
-                .negativeText("cancel")
+                .negativeText(R.string.cancel)
                 .onNegative((materialDialog, dialogAction) -> {
                     if (storageTask != null) {
                         storageTask.cancel();
@@ -381,7 +381,7 @@ public class ImageDisplayActivity extends BaseActivity {
                     if (dialog != null) {
                         dialog.dismiss();
                     }
-                    Snackbar.make(coordinatorLayout, "上传成功", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, R.string.upload_success, Snackbar.LENGTH_SHORT).show();
                     String downloadUrl = taskSnapshot.getDownloadUrl().toString();
                     Pattern pattern = Pattern.compile("^image/([^/]+)(?:/.*)$");
                     StorageMetadata metadata = taskSnapshot.getMetadata();
@@ -401,7 +401,7 @@ public class ImageDisplayActivity extends BaseActivity {
                     if (dialog != null) {
                         dialog.dismiss();
                     }
-                    Snackbar.make(coordinatorLayout, "上传失败", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, R.string.upload_failure, Snackbar.LENGTH_SHORT).show();
                 })
                 .addOnPausedListener(this, taskSnapshot -> {
                     if (dialog != null) {

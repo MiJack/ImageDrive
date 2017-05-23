@@ -74,7 +74,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
         switch (fragmentCode) {
             case IMAGE_LIST_FRAGMENT:
-                setTitle("Local");
+                setTitle(getString(R.string.local));
                 if (imageListFragment == null) {
                     imageListFragment = new ImageListFragment();
                     transaction.add(R.id.frameLayout, imageListFragment);
@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 currentFragment = imageListFragment;
                 break;
             case IMAGE_DRIVER_FRAGMENT:
-                setTitle("Driver");
+                setTitle(getString(R.string.driver));
                 if (imageDriverFragment == null) {
                     imageDriverFragment = new ImageDriverFragment();
                     transaction.add(R.id.frameLayout, imageDriverFragment);
@@ -188,12 +188,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                                 }
                             };
                     dialog = new AlertDialog.Builder(this)
-                            .setTitle("Sign out")
+                            .setTitle(R.string.sign_out)
                             .setIcon(R.drawable.ic_logout)
                             .setCancelable(false)
-                            .setPositiveButton("确定", listener)
-                            .setNegativeButton("取消", listener)
-                            .setMessage("你确定要退出吗？")
+                            .setPositiveButton(R.string.ok, listener)
+                            .setNegativeButton(R.string.cancel, listener)
+                            .setMessage(R.string.sign_out_message)
                             .create();
                 }
                 dialog.show();

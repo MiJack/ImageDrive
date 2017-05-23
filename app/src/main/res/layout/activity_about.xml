@@ -83,7 +83,7 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintLeft_toLeftOf="@id/relativeLayout"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-                        android:text="基于Firebase的图片同步软件"
+                        android:text="@string/app_content"
                         android:layout_marginTop="8dp"
                         android:textStyle="italic"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -110,7 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/text_margin"
-                        android:text="如果你喜欢这个应用，欢迎联系我！"
+                        android:text="@string/contact_me"
                         android:textColor="@color/colorPrimary"
                         android:textStyle="bold" />
 
@@ -143,7 +143,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_margin="@dimen/text_margin"
-                            android:text="Support me!"
+                            android:text="@string/support_me"
                             android:textStyle="italic" />
                     </LinearLayout>
 
@@ -152,7 +152,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/ll_card_about_2_shop"
-                     android:onClick="emailMe"   android:background="?android:selectableItemBackground"
+                        android:onClick="emailMe"
+                        android:background="?android:selectableItemBackground"
                         android:clickable="true"
                         android:orientation="horizontal">
 
@@ -168,7 +169,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_margin="@dimen/text_margin"
-                            android:text="mijackstudio@gmail.com"
+                            android:text="@string/author_email"
                             android:textStyle="italic" />
                     </LinearLayout>
 
@@ -177,7 +178,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/ll_card_about_2_email"
-                 android:onClick="seeCode"       android:background="?android:selectableItemBackground"
+                        android:onClick="seeCode"
+                        android:background="?android:selectableItemBackground"
                         android:clickable="true"
                         android:orientation="horizontal">
 
@@ -193,7 +195,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_margin="@dimen/text_margin"
-                            android:text="https://github.com/MiJack/ImageDrive"
+                            android:text="@string/github"
                             android:textStyle="italic" />
                     </LinearLayout>
 
