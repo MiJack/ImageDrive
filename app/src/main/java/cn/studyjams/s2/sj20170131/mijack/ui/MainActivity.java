@@ -120,11 +120,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (resultCode == RESULT_CANCELED) {
                     return;
                 }
-                if (resultCode == AccountActivity.RESULT_LOGIN) {
+                if (resultCode == LoginActivity.RESULT_LOGIN) {
                     headerView.loadLoginInfo();
                     return;
                 }
-                if (resultCode == AccountActivity.RESULT_NEW_ACCOUNT) {
+                if (resultCode == LoginActivity.RESULT_NEW_ACCOUNT) {
                     headerView.loadLoginInfo();
                 }
                 break;

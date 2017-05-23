@@ -1,7 +1,11 @@
 package cn.studyjams.s2.sj20170131.mijack.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +28,10 @@ import cn.studyjams.s2.sj20170131.mijack.util.Utils;
 
 import java.io.File;
 import java.util.List;
+
+import static cn.studyjams.s2.sj20170131.mijack.ui.ImageDisplayActivity.IMAGE;
+import static cn.studyjams.s2.sj20170131.mijack.ui.ImageDisplayActivity.LOCAL_FILE;
+import static cn.studyjams.s2.sj20170131.mijack.ui.ImageDisplayActivity.TYPE;
 
 /**
  * @author Mr.Yuan
@@ -97,9 +105,9 @@ public class ImageAdapter extends RecyclerView.Adapter implements View.OnClickLi
             case ITEM_FOLDER:
                 Folder folder = (Folder) data.get(position);
                 TextView folderName = (TextView) root.findViewById(R.id.folderName);
-                TextView folderDesc = (TextView) root.findViewById(R.id.folderDesc);
+//                TextView folderDesc = (TextView) root.findViewById(R.id.folderDesc);
                 folderName.setText(new File(folder.getPath()).getName());
-                folderDesc.setText((folder.getCount() > 0 ? String.format("%d张图片", folder.getCount()) : ""));
+//                folderDesc.setText((folder.getCount() > 0 ? String.format("%d张图片", folder.getCount()) : ""));
                 break;
             case ITEM_IMAGE:
                 Image image = (Image) (showType == SHOW_FOLDER ? data : images).get(position);
@@ -154,7 +162,12 @@ public class ImageAdapter extends RecyclerView.Adapter implements View.OnClickLi
             v.getContext().startActivity(intent);
         } else if (itemViewType == ITEM_IMAGE) {
             Image image = (Image) data.get(position);
-            ImageDisplayActivity.showLocalImage(v.getContext(),image);
+            Context context =v.getContext();
+            ActivityOptionsCompat activityOptions =ActivityOptionsCompat
+                    .makeSceneTransitionAnimation((Activity)context,
+                    new Pair<View,String>(v.findViewById(R.id.imageView),"image")
+            );
+            ImageDisplayActivity.showLocalImage(v.getContext(),image,activityOptions.toBundle());
         }
     }
 }

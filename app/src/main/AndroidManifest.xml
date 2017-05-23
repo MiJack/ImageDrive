@@ -29,7 +29,7 @@
             android:label="MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.AccountActivity"
+            android:name=".ui.LoginActivity"
             android:label="@string/title_activity_account"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
@@ -53,8 +53,6 @@
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.UploadImageDialog" android:label="upload"
-            android:theme="@style/AppTheme.Dialog"/>
     </application>
 
 </manifest>

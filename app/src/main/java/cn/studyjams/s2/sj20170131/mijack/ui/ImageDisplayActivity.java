@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -77,11 +79,11 @@ public class ImageDisplayActivity extends BaseActivity {
     private MaterialDialog downloadDialog;
     private DatabaseReference databaseReference;
 
-    public static void showLocalImage(Context context, Image image) {
+    public static void showLocalImage(Context context, Image image, Bundle bundle) {
         Intent intent = new Intent(context, ImageDisplayActivity.class)
                 .putExtra(IMAGE, image)
                 .putExtra(TYPE, LOCAL_FILE);
-        context.startActivity(intent);
+        ActivityCompat.startActivity(context,intent,bundle);
     }
 
     public static void showFirebaseImage(Context context, FirebaseImage firebaseImage, String databaseReference) {
@@ -115,7 +117,7 @@ public class ImageDisplayActivity extends BaseActivity {
             Log.d(TAG, "onCreate: image:" + image.getPath());
             Glide.with(imageView.getContext())
                     .load(image.getPath())
-                    .placeholder(R.drawable.ic_picture_filled)
+//                    .placeholder(R.drawable.ic_picture_filled)
                     .into(imageView);
         } else if (FIREBASE_STORAGE.equals(type) && intent.hasExtra(DOWNLOAD_URL)) {
             firebaseImage = intent.getParcelableExtra(DOWNLOAD_URL);
@@ -125,11 +127,12 @@ public class ImageDisplayActivity extends BaseActivity {
             Log.d(TAG, "onCreate: url:" + url);
             Glide.with(imageView.getContext())
                     .load(url)
-                    .placeholder(R.drawable.ic_picture_filled)
+//                    .placeholder(R.drawable.ic_picture_filled)
                     .into(imageView);
         } else {
             return;
         }
+        ViewCompat.setTransitionName(imageView,"image");
         icons.add(iconShare);
         icons.add(iconUpload);
         icons.add(iconDelete);

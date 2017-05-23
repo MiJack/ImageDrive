@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="cn.studyjams.s2.sj20170131.mijack.ui.AccountActivity"
+    tools:context="cn.studyjams.s2.sj20170131.mijack.ui.LoginActivity"
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="81dp"
     tools:showIn="@layout/activity_login">
@@ -40,7 +40,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
-    <cn.studyjams.s2.sj20170131.mijack.widget.IMEBlockLayout
+    <LinearLayout
         android:id="@+id/inputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
         </android.support.design.widget.TextInputLayout>
-    </cn.studyjams.s2.sj20170131.mijack.widget.IMEBlockLayout>
+    </LinearLayout>
 
     <Button
         android:id="@+id/otherChoice"

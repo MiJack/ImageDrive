@@ -1,12 +1,9 @@
 package cn.studyjams.s2.sj20170131.mijack.componment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,9 +13,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import cn.studyjams.s2.sj20170131.mijack.R;
-import cn.studyjams.s2.sj20170131.mijack.ui.AccountActivity;
+import cn.studyjams.s2.sj20170131.mijack.ui.LoginActivity;
 import cn.studyjams.s2.sj20170131.mijack.ui.MainActivity;
-import cn.studyjams.s2.sj20170131.mijack.ui.ProfileActivity;
 import cn.studyjams.s2.sj20170131.mijack.util.Utils;
 
 /**
@@ -74,7 +70,7 @@ public class NavigationHeaderView implements View.OnClickListener, FirebaseAuth.
             case R.id.profile_image:
                 //
                 if (!isLogin()) {
-                    Intent intent = new Intent(activity, AccountActivity.class);
+                    Intent intent = new Intent(activity, LoginActivity.class);
                     activity.startActivityForResult(intent, MainActivity.REQUEST_CODE_LOGIN);
                 } else {
                     activity.startProfileActivity();
