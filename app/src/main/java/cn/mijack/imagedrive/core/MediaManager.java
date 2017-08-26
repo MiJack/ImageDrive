@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.media.ExifInterface;
 
+import cn.mijack.imagedrive.entity.Folder;
 import cn.mijack.imagedrive.entity.Image;
 import cn.mijack.imagedrive.entity.Media;
 import cn.mijack.imagedrive.util.Utils;
@@ -55,7 +56,7 @@ public class MediaManager {
             } while (folderCursor.moveToNext());
         }
 
-        Utils.close(folderCursor);
+        Utils.Companion.close(folderCursor);
         return result;
     }
 
@@ -83,11 +84,11 @@ public class MediaManager {
             do {
                 System.out.println(
                         c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA)));
-                Image image = Image.getImageFromCursor(c);
+                Image image = Image.Companion.getImageFromCursor(c);
                 images.add(image);
             } while (c.moveToNext());
         }
-        Utils.close(c);
+        Utils.Companion.close(c);
         return images;
     }
 
@@ -128,11 +129,11 @@ public class MediaManager {
             do {
                 System.out.println(
                         c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA)));
-                Image image = Image.getImageFromCursor(c);
+                Image image = Image.Companion.getImageFromCursor(c);
                 images.add(image);
             } while (c.moveToNext());
         }
-        Utils.close(c);
+        Utils.Companion.close(c);
         return images;
     }
 

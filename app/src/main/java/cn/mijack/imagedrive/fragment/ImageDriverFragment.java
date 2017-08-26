@@ -2,6 +2,7 @@ package cn.mijack.imagedrive.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -21,13 +22,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import cn.mijack.imagedrive.R;
 import cn.mijack.imagedrive.adapter.FirebaseStorageAdapter;
-import cn.mijack.imagedrive.base.BaseFragment;
 
 /**
  * @author Mr.Yuan
  * @date 2017/4/28
  */
-public class ImageDriverFragment extends BaseFragment
+public class ImageDriverFragment extends Fragment
         implements SwipeRefreshLayout.OnRefreshListener, ValueEventListener {
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;

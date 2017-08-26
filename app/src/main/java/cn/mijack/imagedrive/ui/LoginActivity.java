@@ -82,16 +82,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.nextAction:
-                String email = TextHelper.getText(emailLayout);
+                String email = TextHelper.Companion.getText(emailLayout);
                 if (TextUtils.isEmpty(email)) {
                     emailLayout.setError(getString(R.string.email_is_empty));
                     return;
                 }
-                if (!TextHelper.isEmail(email)) {
+                if (!TextHelper.Companion.isEmail(email)) {
                     emailLayout.setError(getString(R.string.email_format_is_not_correct));
                     return;
                 }
-                String password = TextHelper.getText(passwordLayout);
+                String password = TextHelper.Companion.getText(passwordLayout);
                 if (TextUtils.isEmpty(password)) {
                     passwordLayout.setError(getString(R.string.password_is_empty));
                     return;

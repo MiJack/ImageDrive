@@ -3,6 +3,7 @@ package cn.mijack.imagedrive.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +15,6 @@ import java.util.List;
 
 import cn.mijack.imagedrive.R;
 import cn.mijack.imagedrive.adapter.ImageAdapter;
-import cn.mijack.imagedrive.base.BaseFragment;
 import cn.mijack.imagedrive.core.MediaManager;
 import cn.mijack.imagedrive.entity.Image;
 import cn.mijack.imagedrive.entity.Media;
@@ -23,7 +23,7 @@ import cn.mijack.imagedrive.entity.Media;
  * @author Mr.Yuan
  * @date 2017/4/25
  */
-public class ImageListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ImageListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     public static final int SHOW_ALL_FOLDERS = 1;
     public static final int SHOW_IMAGE_IN_FOLDER = 2;
     public static final int SHOW_ALL_IMAGES = 3;

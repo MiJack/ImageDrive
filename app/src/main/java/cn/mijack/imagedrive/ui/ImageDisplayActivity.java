@@ -212,8 +212,8 @@ public class ImageDisplayActivity extends BaseActivity {
         list.add(new Attribute<String>(getString(R.string.download_link), firebaseImage.getDownloadUrl()));
         list.add(new Attribute<String>(getString(R.string.resolution), firebaseImage.getWidth() + "*" + firebaseImage.getHeight()));
         list.add(new Attribute<String>(getString(R.string.local_path_before), firebaseImage.getLocalPath()));
-        list.add(new Attribute<String>(getString(R.string.create_time), Utils.formatTime(firebaseImage.getDateTaken())));
-        list.add(new Attribute<String>(getString(R.string.upload_time), Utils.formatTime(firebaseImage.getUploadTime())));
+        list.add(new Attribute<String>(getString(R.string.create_time), Utils.Companion.formatTime(firebaseImage.getDateTaken())));
+        list.add(new Attribute<String>(getString(R.string.upload_time), Utils.Companion.formatTime(firebaseImage.getUploadTime())));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter.setList(list);
         recyclerView.setAdapter(adapter);
@@ -303,7 +303,7 @@ public class ImageDisplayActivity extends BaseActivity {
                 list.add(new Attribute(getString(R.string.resolution), image.getWidth() + "*" + image.getHeight()));
                 list.add(new Attribute(getString(R.string.local_path), image.getPath()));
                 list.add(new Attribute(getString(R.string.file_size), image.getSize() + "KB"));
-                list.add(new Attribute(getString(R.string.create_time), Utils.formatTime(image.getDateTaken())));
+                list.add(new Attribute(getString(R.string.create_time), Utils.Companion.formatTime(image.getDateTaken())));
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 adapter.setList(list);
                 recyclerView.setAdapter(adapter);
@@ -350,10 +350,10 @@ public class ImageDisplayActivity extends BaseActivity {
         }
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         File file = new File(image.getPath());
-        String md5 = Utils.fileMD5(file);
-        String fileExtensionName = Utils.fileExtensionName(file);
+        String md5 = Utils.Companion.fileMD5(file);
+        String fileExtensionName = Utils.Companion.fileExtensionName(file);
         String device = Build.DEVICE;
-        cloudFileName = Utils.base64Encode(device + "-" + image.getPath() + "-" + md5) + fileExtensionName;
+        cloudFileName = Utils.Companion.base64Encode(device + "-" + image.getPath() + "-" + md5) + fileExtensionName;
         System.out.println(cloudFileName);
         StorageReference reference = firebaseStorage.getReference()
                 .child("image").child(firebaseAuth.getCurrentUser().getUid());

@@ -63,7 +63,7 @@ public class NavigationHeaderView implements View.OnClickListener, FirebaseAuth.
             email.setText(currentUser.getEmail());
             nickName.setText(currentUser.getDisplayName());
         }
-        if (currentUser == null || Utils.isEmpty(currentUser.getPhotoUrl())) {
+        if (currentUser == null || Utils.Companion.isEmpty(currentUser.getPhotoUrl())) {
             profileView.setImageResource(R.drawable.ic_empty_profile);
         } else {
             Glide.with(profileView.getContext()).load(currentUser.getPhotoUrl()).into(profileView);

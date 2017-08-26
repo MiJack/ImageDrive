@@ -49,13 +49,13 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        titleInfo = (TextView) findViewById(R.id.titleInfo);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        circleImageView = (CircleImageView) findViewById(R.id.circleImageView);
-        selectAvatar = (Button) findViewById(R.id.selectAvatar);
-        editNickName = (TextInputLayout) findViewById(R.id.editNickName);
-        editEmail = (TextInputLayout) findViewById(R.id.editEmail);
+        toolbar = findViewById(R.id.toolbar);
+        titleInfo = findViewById(R.id.titleInfo);
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
+        circleImageView = findViewById(R.id.circleImageView);
+        selectAvatar = findViewById(R.id.selectAvatar);
+        editNickName = findViewById(R.id.editNickName);
+        editEmail = findViewById(R.id.editEmail);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -65,7 +65,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
         editNickName.getEditText().setText(user.getDisplayName());
         editEmail.getEditText().setText(user.getEmail());
         System.out.println("photo uri:" + user.getPhotoUrl());
-        if (!Utils.isEmpty(user.getPhotoUrl())) {
+        if (!Utils.Companion.isEmpty(user.getPhotoUrl())) {
             Glide.with(this).load(user.getPhotoUrl()).into(circleImageView);
         } else {
             circleImageView.setImageResource(R.drawable.ic_empty_profile);
@@ -87,7 +87,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
             case R.id.actionSave:
                 editNickName.setEnabled(false);
                 UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(TextHelper.getText(editNickName))
+                        .setDisplayName(TextHelper.Companion.getText(editNickName))
                         .build();
                 firebaseAuth.getCurrentUser().updateProfile(request)
                         .addOnFailureListener(this, result -> Snackbar.make(coordinatorLayout, R.string.settings_failure, Snackbar.LENGTH_SHORT).show())

@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
 import cn.mijack.imagedrive.R;
+import cn.mijack.imagedrive.entity.Folder;
 import cn.mijack.imagedrive.entity.Image;
 import cn.mijack.imagedrive.entity.Media;
 import cn.mijack.imagedrive.ui.ImageDisplayActivity;
@@ -113,7 +114,7 @@ public class ImageAdapter extends RecyclerView.Adapter implements View.OnClickLi
 
     @Override
     public int getItemCount() {
-        return showType == SHOW_FOLDER ? Utils.size(data) : Utils.size(images);
+        return showType == SHOW_FOLDER ? Utils.Companion.size(data) : Utils.Companion.size(images);
     }
 
     public int getBigSpanCount() {
@@ -155,12 +156,12 @@ public class ImageAdapter extends RecyclerView.Adapter implements View.OnClickLi
             v.getContext().startActivity(intent);
         } else if (itemViewType == ITEM_IMAGE) {
             Image image = (Image) data.get(position);
-            Context context =v.getContext();
-            ActivityOptionsCompat activityOptions =ActivityOptionsCompat
-                    .makeSceneTransitionAnimation((Activity)context,
-                    new Pair<View,String>(v.findViewById(R.id.imageView),"image")
-            );
-            ImageDisplayActivity.showLocalImage(v.getContext(),image,activityOptions.toBundle());
+            Context context = v.getContext();
+            ActivityOptionsCompat activityOptions = ActivityOptionsCompat
+                    .makeSceneTransitionAnimation((Activity) context,
+                            new Pair<View, String>(v.findViewById(R.id.imageView), "image")
+                    );
+            ImageDisplayActivity.showLocalImage(v.getContext(), image, activityOptions.toBundle());
         }
     }
 }
