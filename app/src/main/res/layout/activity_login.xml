@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/content"
     android:fitsSystemWindows="true"
-    tools:context="cn.studyjams.s2.sj20170131.mijack.ui.LoginActivity">
+    tools:context="cn.mijack.imagedrive.ui.LoginActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

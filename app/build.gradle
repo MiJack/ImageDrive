@@ -8,7 +8,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
     defaultConfig {
-        applicationId "cn.studyjams.s2.sj20170131.mijack"
+        applicationId "cn.mijack.imagedrive"
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
@@ -52,6 +52,10 @@ dependencies {
     compile 'com.google.android:flexbox:0.3.0-alpha3'
     compile 'com.afollestad.material-dialogs:core:0.9.4.4'
     compile 'com.firebaseui:firebase-ui-database:1.2.0'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
 }
 apply plugin: 'com.google.gms.google-services'
+repositories {
+    mavenCentral()
+}

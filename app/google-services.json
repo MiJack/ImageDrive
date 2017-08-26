@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:947072050139:android:50562ef79cde2966",
+        "mobilesdk_app_id": "1:947072050139:android:21826867b45fdcea",
         "android_client_info": {
-          "package_name": "cn.studyjams.s2.sj20170131.mijack"
+          "package_name": "cn.mijack.imagedrive"
         }
       },
       "oauth_client": [
